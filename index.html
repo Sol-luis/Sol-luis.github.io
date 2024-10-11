@@ -4,6 +4,31 @@
   <title>Interactive Map</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Mapeando Uso do Solo ES </title>
+  <style>
+  body {
+            background-color: #FFBF00;
+            font-family: Arial, sans-serif;
+        }
+        .title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .logo {
+            position: fixed;
+            bottom: 35px;
+            left: 1500px;
+            width: 150px;
+            height: 100px;
+            z-index: 9999;
+        }  
+  </style>
   
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
@@ -20,6 +45,12 @@
 <body>
   <!-- Div to hold the map -->
   <div id="map"></div>
+  <h3 class="title">Mapa interativo, propriedades e seus usos do solo (2021)</h3>
+  <h3 class="subtitle">Para obter mais informações, coloque o mouse sobre as propriedades</h3>
+
+    <!-- Map content here -->
+
+
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
