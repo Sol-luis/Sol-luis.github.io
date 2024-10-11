@@ -5,7 +5,7 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/
 }).addTo(map);
 
 
-fetch('data/gdf_muni.geojson')
+fetch('data/gdf_muni_ES.geojson')
   .then(response => response.json())  // Parse do GeoJSON
   .then(data => {
     var geojsonLayer = L.geoJSON(data, //adicionando características a minha layer
@@ -20,8 +20,8 @@ fetch('data/gdf_muni.geojson')
         onEachFeature: function(feature, layer) {
           // Tooltip content using the fields from GeoJSON properties
           var tooltipContent = 
-            "<strong>Nome :</strong> " + feature.properties.nm_mun + "<br>" +
-            "<strong>Código do município:</strong> " + feature.properties.cd_mun + "<br>";
+            "<strong>Nome do Município :</strong> " + feature.properties.NM_MUN + "<br>" +
+            "<strong>Código do município:</strong> " + feature.properties.CD_MUN + "<br>";
           
           // Bind the tooltip to the layer
           layer.bindTooltip(tooltipContent);
@@ -32,7 +32,7 @@ fetch('data/gdf_muni.geojson')
   // Add search control
     var searchControl = new L.Control.Search({
       layer: geojsonLayer,
-      propertyName: 'nm_mun', // The property to search in your GeoJSON data
+      propertyName: 'NM_MUN', // The property to search in your GeoJSON data
       zoom: 12, // Zoom to the found feature
       initial: false, // Don't search automatically
       textPlaceholder: 'Digite aqui para procurar o municipio' // Placeholder for the search box
