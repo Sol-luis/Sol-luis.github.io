@@ -4,10 +4,11 @@ import pandas as pd
 
 def file_opener(): # do colab
     return
+
 def car_homogeneo():
     return
 
-def car_to_limit(): # pega uma lista x de cars e encontra shapefiles correspondentes
+def car_to_limit(): # pega uma lista com n de códigos do car e encontra shapefiles correspondentes
     return
 
 def limit_to_data_folder():
