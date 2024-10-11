@@ -8,20 +8,20 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/
 fetch('data/gdf_muni.geojson')
   .then(response => response.json())  // Parse do GeoJSON
   .then(data => {
-    L.geoJSON(data, //adicionando características a minha layer
+    var geojsonLayer = L.geoJSON(data, //adicionando características a minha layer
       {
         style: function(feature) {
           return {
-            color: 'black',
+            color: 'grey',
             weight: 1,
-            fillOpacity: 0.5
+            fillOpacity: 0.3
           };
         },
         onEachFeature: function(feature, layer) {
           // Tooltip content using the fields from GeoJSON properties
           var tooltipContent = 
             "<strong>Nome :</strong> " + feature.properties.nm_mun + "<br>" +
-            "<strong>Grupo:</strong> " + feature.properties.cd_mun + "<br>";
+            "<strong>Código do município:</strong> " + feature.properties.cd_mun + "<br>";
           
           // Bind the tooltip to the layer
           layer.bindTooltip(tooltipContent);
@@ -29,6 +29,17 @@ fetch('data/gdf_muni.geojson')
       }
 
     ).addTo(map);  // Add the GeoJSON layer to the map
+  // Add search control
+    var searchControl = new L.Control.Search({
+      layer: geojsonLayer,
+      propertyName: 'nm_mun', // The property to search in your GeoJSON data
+      zoom: 6, // Zoom to the found feature
+      initial: false, // Don't search automatically
+      textPlaceholder: 'Digite aqui para procurar o municipio' // Placeholder for the search box
+    });
+
+    // Add the search control to the map
+    map.addControl(searchControl);
   })
   .catch(error => {
     console.error('Error loading the GeoJSON file:', error);
