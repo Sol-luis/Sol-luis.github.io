@@ -33,7 +33,7 @@ fetch('data/gdf_muni.geojson')
     var searchControl = new L.Control.Search({
       layer: geojsonLayer,
       propertyName: 'nm_mun', // The property to search in your GeoJSON data
-      zoom: 6, // Zoom to the found feature
+      zoom: 12, // Zoom to the found feature
       initial: false, // Don't search automatically
       textPlaceholder: 'Digite aqui para procurar o municipio' // Placeholder for the search box
     });
