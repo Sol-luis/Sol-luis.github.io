@@ -4,7 +4,6 @@ import pandas as pd
 
 def file_opener(): # do colab
     return
-
 def car_homogeneo():
     return
 
@@ -15,7 +14,7 @@ def limit_to_data_folder():
     return
 
 ### Abrindo arquivos xlsx e shapefile
-
+xslx = pd.read()
 
 ### Coluna CAR dos dois bancos no mesmo tipo e formato
 
