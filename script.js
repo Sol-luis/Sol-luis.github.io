@@ -1,5 +1,5 @@
 //https://leaflet-extras.github.io/leaflet-providers/preview/
-var map = L.map('map').setView([-4.3,  -50.05], 8);
+var map = L.map('map').setView([-20.28,  -41.51], 8);
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
 }).addTo(map);
