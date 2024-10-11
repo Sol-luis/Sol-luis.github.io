@@ -1,17 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interactive Map</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+
+  <style>
+    #map {
+      height: 600px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Interactive Map</h1>
-  <div id="map" style="height: 500px;"></div>
+  <!-- Div to hold the map -->
+  <div id="map"></div>
 
-  <script src="script.js"></script>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  
+  <!-- Your custom JavaScript file -->
+  <script src="path/to/your/script.js"></script>
 </body>
 </html>
