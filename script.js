@@ -7,9 +7,29 @@ L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}
 
 
 fetch('data/gdf_muni.geojson')
-  .then(response => response.json())  // Parse the GeoJSON file
+  .then(response => response.json())  // Parse do GeoJSON
   .then(data => {
-    L.geoJSON(data).addTo(map);  // Add the GeoJSON layer to the map
+    L.geoJSON(data, //adicionando características a minha layer
+      {
+        style: function(feature) {
+          return {
+            color: 'black',
+            weight: 1,
+            fillOpacity: 0.5
+          };
+        },
+        onEachFeature: function(feature, layer) {
+          // Tooltip content using the fields from GeoJSON properties
+          var tooltipContent = 
+            "<strong>Nome :</strong> " + feature.properties.nm_mun + "<br>" +
+            "<strong>Grupo:</strong> " + feature.properties.cd_mun + "<br>";
+          
+          // Bind the tooltip to the layer
+          layer.bindTooltip(tooltipContent);
+        }
+      }
+
+    ).addTo(map);  // Add the GeoJSON layer to the map
   })
   .catch(error => {
     console.error('Error loading the GeoJSON file:', error);
