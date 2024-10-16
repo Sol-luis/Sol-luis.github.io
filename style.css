@@ -127,10 +127,6 @@ body {
 }
 
 
-
-
-
-
 /* Make sure the map stays to the right of the sidebar */
 #map {
   height: 100vh;
@@ -139,4 +135,21 @@ body {
   top: 0;
   left: 200x;  /* Match the sidebar width */
   z-index: 1001;
+}
+.legend {
+  line-height: 25px;
+  color: #333; /* Dark text for contrast */
+  background-color: white; /* Set the background to white */
+  padding: 15px; /* Add some padding around the legend */
+  border-radius: 5px; /* Rounded corners for a smoother appearance */
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Add a shadow for a subtle 3D effect */
+  font-size: 18px
+}
+
+.legend i {
+  width: 18px;
+  height: 18px;
+  float: left;
+  margin-right: 8px; /* Reduce margin for tighter spacing */
+  opacity: 0.9; /* Keep some transparency for the color boxes */
 }
