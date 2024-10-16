@@ -3,7 +3,7 @@ import geopandas as gpd
 import pandas as pd
 import fnmatch as fn
 import zipfile
-import tempfile
+import re
 
 def process_files(vault_files, pattern, file_type, zipped=False):
     def process_vsizip(zip_path, file_ext):
@@ -90,6 +90,17 @@ def add_area(df):
     df = df.to_crs(epsg=4674)
     return df
 
+def reclass_car(x):
+    cl1 = re.compile("AT")
+    cl2 = re.compile("CA")
+    cl3 = re.compile("PE")
+    if cl1.match(x):
+        return "Ativo"
+    elif cl2.match(x):
+        return "Cancelado"
+    elif cl3.match(x):
+        return "Pendente"
+
 
 ### Abrindo arquivos xlsx e shapefile
 vault_files = "/home/luisthethormes/01_sol/geo-dev/Sol-luis.github.io/data"
@@ -107,7 +118,9 @@ xlsx_car_lj_limite = xlsx_car.merge(limite, how='left',left_on="car", right_on="
 export_bd = xlsx_car_lj_limite.drop(columns=['_merge'], inplace=False)
 export_bd = gpd.GeoDataFrame(export_bd, geometry='geometry')
 export_bd = add_area(export_bd)
-print(export_bd.info())
+export_bd["status_car"] = export_bd["ind_status"].apply(reclass_car)
+print(export_bd.ind_status.value_counts())
+print(export_bd.status_car.value_counts())
 
 ### Exportando resultados para pasta correspondente
 export_bd.to_file(os.path.join(vault_files,'pol_props_ES.geojson'), driver="GeoJSON", encoding='utf-8')

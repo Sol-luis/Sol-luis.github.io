@@ -13,7 +13,7 @@ fetch('data/pol_props_ES.geojson')
     var polPropsLayer = L.geoJSON(data, {
       style: function(feature) {
         return {
-          color: 'white',
+          color: 'yellow',
           weight: 1,
           fillOpacity: 0.3
         };
@@ -22,8 +22,8 @@ fetch('data/pol_props_ES.geojson')
         // Tooltip content for pol_props_ES
         var tooltipContent = 
           "<strong>Área da propriedade:</strong> " + feature.properties.area_hectares + "<br>" +
-          "<strong>Cadastro Ambiental Rural:</strong> " + feature.properties.car + "<br>"+
-          "<strong>Status da propriedade:</strong> " + feature.properties.ind_status + "<br>";
+          "<strong>CAR:</strong> " + feature.properties.car + "<br>"+
+          "<strong>Status da propriedade:</strong> " + feature.properties.status_car + "<br>";
         
         // Bind tooltip to the layer
         layer.bindTooltip(tooltipContent);
@@ -50,6 +50,7 @@ fetch('data/gdf_muni_ES.geojson')
         return {
           color: 'grey',
           weight: 3,
+
           fillOpacity: 0
         };
       },
@@ -76,7 +77,7 @@ legend.onAdd = function (map) {
   var div = L.DomUtil.create('div', 'info legend'),
       labels = ['<strong>Legenda</strong>'],
       categories = ['Limites municipais', 'Limite das propriedades rurais'],
-      colors = ['grey', 'white'];  // Colors corresponding to each layer
+      colors = ['grey', 'yellow'];  // Colors corresponding to each layer
 
   // Loop through the categories and colors to generate the legend
   for (var i = 0; i < categories.length; i++) {
