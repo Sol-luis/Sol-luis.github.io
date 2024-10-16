@@ -2,6 +2,7 @@
 body {
   /* background-color: #be9415; */
   font-family: Arial, sans-serif;
+  height: 100%
 }
 
 .title {
@@ -126,11 +127,10 @@ body {
   padding: 10px;
 }
 
-
 /* Make sure the map stays to the right of the sidebar */
 #map {
   height: 100vh;
-  width: calc(100% - 200px);  /* Calculate width of the map minus the sidebar width */
+  width: 100%;  /* Calculate width of the map minus the sidebar width */
   position: right;
   top: 0;
   left: 200x;  /* Match the sidebar width */
