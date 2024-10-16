@@ -13,7 +13,7 @@ fetch('data/pol_props_ES.geojson')
     var polPropsLayer = L.geoJSON(data, {
       style: function(feature) {
         return {
-          color: 'blue',
+          color: 'white',
           weight: 1,
           fillOpacity: 0.3
         };
@@ -21,9 +21,9 @@ fetch('data/pol_props_ES.geojson')
       onEachFeature: function(feature, layer) {
         // Tooltip content for pol_props_ES
         var tooltipContent = 
-          "<strong>Módulos Fiscais:</strong> " + feature.properties.mod_fiscal + "<br>" +
-          "<strong>Tipo de propriedade:</strong> " + feature.properties.ind_tipo + "<br>"+
-          "<strong>Municipio da propriedade:</strong> " + feature.properties.municipio + "<br>";
+          "<strong>Área da propriedade:</strong> " + feature.properties.area_hectares + "<br>" +
+          "<strong>Cadastro Ambiental Rural:</strong> " + feature.properties.car + "<br>"+
+          "<strong>Status da propriedade:</strong> " + feature.properties.ind_status + "<br>";
         
         // Bind tooltip to the layer
         layer.bindTooltip(tooltipContent);
@@ -48,7 +48,7 @@ fetch('data/gdf_muni_ES.geojson')
     var geojsonLayer = L.geoJSON(data, {
       style: function(feature) {
         return {
-          color: 'white',
+          color: 'grey',
           weight: 3,
           fillOpacity: 0
         };
@@ -69,4 +69,24 @@ fetch('data/gdf_muni_ES.geojson')
     // Add the search control to the map
     map.addControl(searchControl);
   })
-  .catch(error => console.error('Error loading GeoJSON:', error));  // Error handling
+
+// Add legend control
+var legend = L.control({ position: 'bottomright' });
+legend.onAdd = function (map) {
+  var div = L.DomUtil.create('div', 'info legend'),
+      labels = ['<strong>Legenda</strong>'],
+      categories = ['Limites municipais', 'Limite das propriedades rurais'],
+      colors = ['grey', 'white'];  // Colors corresponding to each layer
+
+  // Loop through the categories and colors to generate the legend
+  for (var i = 0; i < categories.length; i++) {
+    labels.push(
+      '<i style="background:' + colors[i] + '"></i> ' + categories[i]);
+  }
+
+  div.innerHTML = labels.join('<br>');
+  return div;
+};
+
+// Add the legend to the map
+legend.addTo(map);

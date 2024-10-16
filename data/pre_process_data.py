@@ -82,6 +82,15 @@ def clean_header(df):
     df.columns = [x.replace(' ', '_') for x in df.columns]
     return df
 
+def add_area(df):
+    df = df.to_crs(epsg=5880)
+    df["area_hectares"] = df['geometry'].area/10000
+    df["area_hectares"] = df["area_hectares"].round(4)
+    #retornando ao crs original
+    df = df.to_crs(epsg=4674)
+    return df
+
+
 ### Abrindo arquivos xlsx e shapefile
 vault_files = "/home/luisthethormes/01_sol/geo-dev/Sol-luis.github.io/data"
 xlsx = process_files(vault_files, "*_produtores*","xlsx")
@@ -95,10 +104,10 @@ print(limite.info())
 
 ### encontrando correspondências
 xlsx_car_lj_limite = xlsx_car.merge(limite, how='left',left_on="car", right_on="cod_imovel", indicator=True)
-print(xlsx_car_lj_limite._merge.value_counts())
-print(xlsx_car_lj_limite)
 export_bd = xlsx_car_lj_limite.drop(columns=['_merge'], inplace=False)
 export_bd = gpd.GeoDataFrame(export_bd, geometry='geometry')
+export_bd = add_area(export_bd)
+print(export_bd.info())
 
 ### Exportando resultados para pasta correspondente
 export_bd.to_file(os.path.join(vault_files,'pol_props_ES.geojson'), driver="GeoJSON", encoding='utf-8')
