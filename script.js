@@ -48,9 +48,9 @@ fetch('data/gdf_muni_ES.geojson')
     var geojsonLayer = L.geoJSON(data, {
       style: function(feature) {
         return {
-          color: 'grey',
+          color: '#C5C5C5',
           weight: 3,
-
+          dashArray: '5, 10',
           fillOpacity: 0
         };
       },
@@ -91,3 +91,11 @@ legend.onAdd = function (map) {
 
 // Add the legend to the map
 legend.addTo(map);
+
+function getColor(d) {
+  return d = 'Ativo' ? '#FFED0F' :
+         d = 'Cancelado'  ? '#E1270A' :
+                          '#FFEDA0';
+}
+
+var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
