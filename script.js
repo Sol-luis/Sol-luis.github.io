@@ -12,17 +12,27 @@ fetch('data/pol_props_ES.geojson')
   .then(data => {
     var polPropsLayer = L.geoJSON(data, {
       style: function(feature) {
+        // Check the status_car property to set the color dynamically
+        var fillColor;
+        if (feature.properties.status_car === 'Ativo') {
+          fillColor = 'yellow';
+        } else if (feature.properties.status_car === 'Cancelado') {
+          fillColor = 'red';
+        } else {
+          fillColor = 'grey';  // Default color for other statuses, if any
+        }
+        
         return {
-          color: 'yellow',
-          weight: 1,
-          fillOpacity: 0.3
+          color: fillColor,
+          weight: 3,
+          fillOpacity: 0.1
         };
       },
       onEachFeature: function(feature, layer) {
         // Tooltip content for pol_props_ES
         var tooltipContent = 
           "<strong>Área da propriedade:</strong> " + feature.properties.area_hectares + "<br>" +
-          "<strong>CAR:</strong> " + feature.properties.car + "<br>"+
+          "<strong>CAR:</strong> " + feature.properties.car + "<br>" +
           "<strong>Status da propriedade:</strong> " + feature.properties.status_car + "<br>";
         
         // Bind tooltip to the layer
@@ -76,8 +86,8 @@ var legend = L.control({ position: 'bottomright' });
 legend.onAdd = function (map) {
   var div = L.DomUtil.create('div', 'info legend'),
       labels = ['<strong>Legenda</strong>'],
-      categories = ['Limites municipais', 'Limite das propriedades rurais'],
-      colors = ['grey', 'yellow'];  // Colors corresponding to each layer
+      categories = ['Limites municipais', 'Limite propriedades rurais Ativas', 'Limite propriedades rurais Canceladas'],
+      colors = ['grey', 'yellow', 'red'];  // Colors corresponding to each layer
 
   // Loop through the categories and colors to generate the legend
   for (var i = 0; i < categories.length; i++) {
@@ -92,10 +102,4 @@ legend.onAdd = function (map) {
 // Add the legend to the map
 legend.addTo(map);
 
-function getColor(d) {
-  return d = 'Ativo' ? '#FFED0F' :
-         d = 'Cancelado'  ? '#E1270A' :
-                          '#FFEDA0';
-}
-
-var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+// var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
