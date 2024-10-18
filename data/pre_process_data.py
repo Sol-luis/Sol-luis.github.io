@@ -123,4 +123,4 @@ print(export_bd.ind_status.value_counts())
 print(export_bd.status_car.value_counts())
 
 ### Exportando resultados para pasta correspondente
-export_bd.to_file(os.path.join(vault_files,'pol_props_ES.geojson'), driver="GeoJSON", encoding='utf-8')
+# export_bd.to_file(os.path.join(vault_files,'pol_props_ES.geojson'), driver="GeoJSON", encoding='utf-8')
