@@ -33,6 +33,7 @@ fetch('data/pol_props_ES.geojson')
         var tooltipContent = 
           "<strong>Área da propriedade:</strong> " + feature.properties.area_hectares + "<br>" +
           "<strong>CAR:</strong> " + feature.properties.car + "<br>" +
+          "<strong>Nome do produtor:</strong> " + feature.properties.produtor + "<br>" +
           "<strong>Status da propriedade:</strong> " + feature.properties.status_car + "<br>";
         
         // Bind tooltip to the layer
@@ -66,6 +67,19 @@ fetch('data/gdf_muni_ES.geojson')
       },
       interactive: false  // Disable interactions with the larger polygons
     }).addTo(map);  // Add the GeoJSON layer to the map
+
+    // Add labels for each municipality
+    geojsonLayer.eachLayer(function(layer) {
+      // Bind a permanent tooltip with the municipality name
+      layer.bindTooltip(layer.feature.properties.NM_MUN, {
+        permanent: true,
+        direction: 'center',
+        className: 'municipality-label', 
+
+        
+        // Add a CSS class for styling
+      }).openTooltip();
+    });
 
     // Add search control for municipalities
     var searchControl = new L.Control.Search({
