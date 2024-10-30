@@ -86,7 +86,9 @@ var legend = L.control({ position: 'bottomright' });
 legend.onAdd = function (map) {
   var div = L.DomUtil.create('div', 'info legend'),
       labels = ['<strong>Legenda</strong>'],
-      categories = ['Limites municipais', 'Limite propriedades rurais Ativas', 'Limite propriedades rurais Canceladas'],
+      categories = ['Limites municipais',
+                     'Limite propriedades rurais Ativas',
+                      'Limite propriedades rurais Canceladas'],
       colors = ['grey', 'yellow', 'red'];  // Colors corresponding to each layer
 
   // Loop through the categories and colors to generate the legend
