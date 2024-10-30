@@ -52,6 +52,21 @@ body {
   background-color: #2980b9;
 }
 
+.municipality-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: black;
+  background-color: rgba(255, 255, 255, 0);
+  border: none;
+  padding: 0px;
+  border-radius: 0px;
+  opacity: 0.9;
+  text-shadow: -1px -1px 1px white,   /* Left top */
+  1px -1px 1px white,   /* Right top */
+ -1px  1px 1px white,   /* Left bottom */
+  1px  1px 1px white;   /* Right bottom */;
+}
+
 
 #sidebar {
   width: 80px;  /* Narrow sidebar by default */
@@ -153,3 +168,4 @@ body {
   margin-right: 8px; /* Reduce margin for tighter spacing */
   opacity: 0.9; /* Keep some transparency for the color boxes */
 }
+
