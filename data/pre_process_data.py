@@ -6,6 +6,32 @@ import zipfile
 import re
 
 def process_files(vault_files, pattern, file_type, zipped=False):
+    """
+    Esta função abre arquivos de diferentes tipos (Shapefile, KML, XLSX, TIF) a partir de um diretório. 
+    Ela também pode lidar com arquivos compactados (.zip) e ler arquivos dentro desses ZIPs diretamente sem a necessidade de extraí-los. 
+
+    Parâmetros:
+    - vault_files (str): Caminho para o diretório onde os arquivos estão localizados.
+    - pattern (str): Padrão do nome do arquivo para identificar quais arquivos devem ser abertos.
+                     Usa expressões de padrão, por exemplo, `arquivo_*` para arquivos que começam com 'arquivo_'.
+    - file_type (str): Tipo do arquivo a ser processado. Pode ser 'shp', 'kml', 'xlsx' ou 'tif'.
+    - zipped (bool): Indica se os arquivos estão compactados em formato ZIP. Se True, procura por arquivos dentro dos ZIPs.
+
+    Retorna:
+    - gpd.GeoDataFrame ou pd.DataFrame: Um GeoDataFrame ou DataFrame contendo os dados dos arquivos processados, 
+                                        dependendo do tipo de arquivo (Shapefile e KML retornam GeoDataFrame; XLSX retorna DataFrame).
+    - list: Uma lista dos arquivos TIF encontrados (se file_type for 'tif' e não estiver em ZIP).
+    - None: Se nenhum arquivo correspondente for encontrado ou se o tipo de arquivo não for suportado.
+
+    Funcionalidades:
+    - Lê arquivos de vários formatos diretamente de um diretório ou dentro de arquivos ZIP, usando um padrão de nome.
+    - Lida com os seguintes tipos de arquivos:
+      - `shp` (Shapefile): Lê arquivos de shapefiles e retorna um GeoDataFrame com os dados.
+      - `kml` (KML): Lê arquivos KML e retorna um GeoDataFrame com os dados.
+      - `xlsx` (Excel): Lê arquivos Excel e retorna um DataFrame com os dados.
+      - `tif` (Imagem): Lista arquivos TIF disponíveis no diretório ou dentro do ZIP, mas não carrega os dados.
+    """
+ 
     def process_vsizip(zip_path, file_ext):
         # Create the /vsizip/ path for GDAL to read directly from the zip
         with zipfile.ZipFile(zip_path, 'r') as z:
@@ -46,7 +72,7 @@ def process_files(vault_files, pattern, file_type, zipped=False):
             print("Nenhum arquivo ZIP encontrado.")
             return None
     else:
-        # Process normal (unzipped) files
+        # Processando sem .zip
         if file_type == 'shp':
             list_files = [x for x in os.listdir(vault_files) if x.endswith('.shp') and fn.fnmatch(x, pattern)]
             if list_files:
@@ -77,12 +103,34 @@ def process_files(vault_files, pattern, file_type, zipped=False):
             return None
 
 def clean_header(df):
+    """
+    Limpa e padroniza os nomes das colunas de um DataFrame, convertendo todos os caracteres para minúsculas,
+    removendo espaços em branco nas extremidades e substituindo espaços por underscores.
+
+    Parâmetros:
+    - df (pd.DataFrame): DataFrame cujas colunas precisam ser padronizadas.
+
+    Retorna:
+    - pd.DataFrame: DataFrame com os nomes das colunas padronizados.
+    """
     df.columns = [x.lower() for x in df.columns]
     df.columns = [x.strip() for x in df.columns]
     df.columns = [x.replace(' ', '_') for x in df.columns]
     return df
 
 def add_area(df):
+    """
+    Adiciona uma coluna 'area_hectares' a um GeoDataFrame contendo a área de cada geometria em hectares.
+    A função muda temporariamente o sistema de coordenadas para EPSG 5880 (Albers Equal Area) para calcular a área corretamente
+    e depois retorna ao sistema original EPSG 4674 (SIRGAS 2000).
+
+    Parâmetros:
+    - df (gpd.GeoDataFrame): GeoDataFrame com uma coluna de geometria.
+
+    Retorna:
+    - gpd.GeoDataFrame: GeoDataFrame com a coluna 'area_hectares', contendo a área de cada geometria em hectares, arredondada para quatro casas decimais.
+    """
+
     df = df.to_crs(epsg=5880)
     df["area_hectares"] = df['geometry'].area/10000
     df["area_hectares"] = df["area_hectares"].round(4)
@@ -91,6 +139,18 @@ def add_area(df):
     return df
 
 def reclass_car(x):
+    """
+    Reclassifica os códigos de status do CAR em três categorias: "Ativo", "Cancelado" e "Pendente",
+    com base nos prefixos dos códigos.
+
+    Parâmetros:
+    - x (str): Código CAR a ser reclassificado.
+
+    Retorna:
+    - str: String indicando o status do CAR: "Ativo" se o código começar com "AT", 
+           "Cancelado" se começar com "CA", e "Pendente" se começar com "PE".
+    """
+    
     cl1 = re.compile("AT")
     cl2 = re.compile("CA")
     cl3 = re.compile("PE")
