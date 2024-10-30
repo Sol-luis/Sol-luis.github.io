@@ -150,7 +150,7 @@ def reclass_car(x):
     - str: String indicando o status do CAR: "Ativo" se o código começar com "AT", 
            "Cancelado" se começar com "CA", e "Pendente" se começar com "PE".
     """
-    
+
     cl1 = re.compile("AT")
     cl2 = re.compile("CA")
     cl3 = re.compile("PE")
@@ -162,25 +162,26 @@ def reclass_car(x):
         return "Pendente"
 
 
-### Abrindo arquivos xlsx e shapefile
+### Abrindo arquivos xlsx e shapefile ###
 vault_files = "/home/luisthethormes/01_sol/geo-dev/Sol-luis.github.io/data"
 xlsx = process_files(vault_files, "*_produtores*","xlsx")
 xlsx = clean_header(xlsx)
-xlsx_car = xlsx[["car"]]
+xlsx_car = xlsx[["car", "produtor"]]
 print(xlsx_car.info())
 limite = process_files(vault_files, "*_IMOVEL_*", "shp", zipped = True)
 print(limite.info())
 
-### Coluna CAR dos dois bancos no mesmo tipo e formato
+### Coluna CAR dos dois bancos no mesmo tipo e formato ###
 
-### encontrando correspondências
+### encontrando correspondências para espacializar os dados a partir do CAR ###
 xlsx_car_lj_limite = xlsx_car.merge(limite, how='left',left_on="car", right_on="cod_imovel", indicator=True)
-export_bd = xlsx_car_lj_limite.drop(columns=['_merge'], inplace=False)
-export_bd = gpd.GeoDataFrame(export_bd, geometry='geometry')
-export_bd = add_area(export_bd)
+export_bd = xlsx_car_lj_limite.drop(columns=['_merge'], inplace=False) #retirando coluna _merge
+export_bd = gpd.GeoDataFrame(export_bd, geometry='geometry') #criando Geodataframe
+export_bd = add_area(export_bd) #Calculando área em hectares
 export_bd["status_car"] = export_bd["ind_status"].apply(reclass_car)
+print(export_bd.columns)
 print(export_bd.ind_status.value_counts())
 print(export_bd.status_car.value_counts())
 
-### Exportando resultados para pasta correspondente
-# export_bd.to_file(os.path.join(vault_files,'pol_props_ES.geojson'), driver="GeoJSON", encoding='utf-8')
+### Exportando resultados para pasta correspondente ###
+export_bd.to_file(os.path.join(vault_files,'pol_props_ES.geojson'), driver="GeoJSON", encoding='utf-8')
