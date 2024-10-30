@@ -34,6 +34,7 @@ fetch('data/pol_props_ES.geojson')
           "<strong>Área da propriedade:</strong> " + feature.properties.area_hectares + "<br>" +
           "<strong>CAR:</strong> " + feature.properties.car + "<br>" +
           "<strong>Nome do produtor:</strong> " + feature.properties.produtor + "<br>" +
+          "<strong>Municipio:</strong> " + feature.properties.municipio + "<br>" +
           "<strong>Status da propriedade:</strong> " + feature.properties.status_car + "<br>";
         
         // Bind tooltip to the layer
