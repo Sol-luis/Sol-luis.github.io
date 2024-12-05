@@ -170,3 +170,11 @@ body {
   opacity: 0.9; /* Keep some transparency for the color boxes */
 }
 
+#map-logo {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 100px; /* Adjust size */
+  z-index: 1000; /* Keep it on top of other elements */
+}
+
