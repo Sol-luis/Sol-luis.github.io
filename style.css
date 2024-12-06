@@ -1,4 +1,3 @@
-/* The rest of your styling remains the same */
 body {
   font-family: Arial, sans-serif;
   height: 100%;
@@ -76,14 +75,19 @@ body {
   left: 0;
   z-index: 1001;
 }
+
 .legend {
+  position: fixed; /* Fix the legend to a specific location */
+  bottom: 20px; /* Position it 20px from the bottom */
+  left: 20px; /* Position it 20px from the left */
+  z-index: 1002; /* Ensure the legend stays on top */
   line-height: 25px;
   color: #333; /* Dark text for contrast */
   background-color: white; /* Set the background to white */
   padding: 10px; /* Add some padding around the legend */
   border-radius: 21px; /* Rounded corners for a smoother appearance */
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Add a shadow for a subtle 3D effect */
-  font-size: 18px
+  font-size: 18px; /* Ensure font size is readable */
 }
 
 .legend i {
@@ -102,3 +106,12 @@ body {
   z-index: 1000; /* Keep it on top of other elements */
 }
 
+/* Ensure legend is responsive */
+@media (max-width: 768px) {
+  .legend {
+    font-size: 16px; /* Adjust font size for smaller screens */
+    padding: 8px; /* Reduce padding for better fit */
+    bottom: 10px; /* Adjust position for smaller screens */
+    left: 10px; /* Adjust position for smaller screens */
+  }
+}
