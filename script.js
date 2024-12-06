@@ -1,64 +1,70 @@
-//https://leaflet-extras.github.io/leaflet-providers/preview/
-var map = L.map('map').setView([-20.28, -41.51], 8);
+var map = L.map('map').setView([-19.46, -40.42], 8);
 
 // Add a tile layer (Imagery from ArcGIS)
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 }).addTo(map);
 
-// Fetch GeoJSON pol_props_ES (smaller polygons)
+// Add coordinates panel
+var coordsPanel = L.control({ position: 'bottomleft' });
+coordsPanel.onAdd = function (map) {
+  var div = L.DomUtil.create('div', 'coords-panel');
+  div.style.backgroundColor = 'white';
+  div.style.padding = '5px';
+  div.style.border = '1px solid #ccc';
+  div.style.fontSize = '12px';
+  div.innerHTML = 'Latitude: <span id="lat">-</span>, Longitude: <span id="lng">-</span>';
+  return div;
+};
+coordsPanel.addTo(map);
+
+map.on('mousemove', function (e) {
+  document.getElementById('lat').innerText = e.latlng.lat.toFixed(6);
+  document.getElementById('lng').innerText = e.latlng.lng.toFixed(6);
+});
+
+// Fetch GeoJSON for rural properties
 fetch('data/pol_props_ES.geojson')
-  .then(response => response.json())  // Parse the GeoJSON file
+  .then(response => response.json())
   .then(data => {
     var polPropsLayer = L.geoJSON(data, {
-      style: function(feature) {
-        // Check the status_car property to set the color dynamically
+      style: function (feature) {
         var fillColor;
         if (feature.properties.status_car === 'Ativo') {
           fillColor = 'yellow';
         } else if (feature.properties.status_car === 'Cancelado') {
           fillColor = 'red';
         } else {
-          fillColor = 'grey';  // Default color for other statuses, if any
+          fillColor = 'grey';
         }
-        
         return {
           color: fillColor,
           weight: 3,
           fillOpacity: 0.1
         };
       },
-      onEachFeature: function(feature, layer) {
-        // Tooltip content for pol_props_ES
-        var tooltipContent = 
+      onEachFeature: function (feature, layer) {
+        var tooltipContent =
           "<strong>Área da propriedade:</strong> " + feature.properties.area_hectares + "<br>" +
           "<strong>CAR:</strong> " + feature.properties.car + "<br>" +
           "<strong>Nome do produtor:</strong> " + feature.properties.produtor + "<br>" +
           "<strong>Municipio:</strong> " + feature.properties.municipio + "<br>" +
           "<strong>Status da propriedade:</strong> " + feature.properties.status_car + "<br>";
-        
-        // Bind tooltip to the layer
         layer.bindTooltip(tooltipContent);
 
-        // Bring smaller polygons to front on mouseover
-        layer.on('mouseover', function(e) {
+        layer.on('mouseover', function (e) {
           layer.bringToFront();
         });
       }
     }).addTo(map);
-
-    // Make sure the smaller layer is brought to the front initially
-    polPropsLayer.eachLayer(function(layer) {
-      layer.bringToFront();
-    });
   });
 
-// Fetch GeoJSON gdf_muni_ES (larger polygons)
+// Fetch GeoJSON for municipalities
 fetch('data/gdf_muni_ES.geojson')
-  .then(response => response.json())  // Parse the GeoJSON file
+  .then(response => response.json())
   .then(data => {
     var geojsonLayer = L.geoJSON(data, {
-      style: function(feature) {
+      style: function (feature) {
         return {
           color: '#C5C5C5',
           weight: 3,
@@ -66,57 +72,56 @@ fetch('data/gdf_muni_ES.geojson')
           fillOpacity: 0
         };
       },
-      interactive: false  // Disable interactions with the larger polygons
-    }).addTo(map);  // Add the GeoJSON layer to the map
+      interactive: false
+    }).addTo(map);
 
-    // Add labels for each municipality
-    geojsonLayer.eachLayer(function(layer) {
-      // Bind a permanent tooltip with the municipality name
-      layer.bindTooltip(layer.feature.properties.NM_MUN, {
+    geojsonLayer.eachLayer(function (layer) {
+      var tooltip = layer.bindTooltip(layer.feature.properties.NM_MUN, {
         permanent: true,
         direction: 'center',
-        className: 'municipality-label', 
-
-        
-        // Add a CSS class for styling
-      }).openTooltip();
+        className: 'municipality-label',
+        opacity: 0
+      });
+      layer._tooltip = tooltip.getTooltip(); // Correctly assign tooltip instance
     });
+
+    function toggleLabels() {
+      var zoom = map.getZoom();
+      geojsonLayer.eachLayer(function (layer) {
+        if (zoom > 8.5) {
+          layer._tooltip.setOpacity(1);
+        } else {
+          layer._tooltip.setOpacity(0);
+        }
+      });
+    }
+
+    map.on('zoomend', toggleLabels);
+    toggleLabels();
 
     // Add search control for municipalities
     var searchControl = new L.Control.Search({
       layer: geojsonLayer,
-      propertyName: 'NM_MUN', // Field in GeoJSON to search
-      zoom: 12,            // Zoom to the feature when found
-      initial: false,      // Don't search automatically
-      textPlaceholder: 'Digite aqui para procurar o município da propriedade',  // Placeholder text
-      autoType: true, 
+      propertyName: 'NM_MUN',
+      zoom: 12,
+      textPlaceholder: 'Digite aqui para procurar o município da propriedade'
     });
-
-    // Add the search control to the map
     map.addControl(searchControl);
-  })
+  });
 
-// Add legend control
+// Add legend
 var legend = L.control({ position: 'bottomright' });
 legend.onAdd = function (map) {
-  var div = L.DomUtil.create('div', 'info legend'),
-      labels = ['<strong>Legenda</strong>'],
-      categories = ['Limites municipais',
-                     'Limite propriedades rurais Ativas',
-                      'Limite propriedades rurais Canceladas'],
-      colors = ['grey', 'yellow', 'red'];  // Colors corresponding to each layer
+  var div = L.DomUtil.create('div', 'info legend');
+  var labels = ['<strong>Legenda</strong>'];
+  var categories = ['Limites municipais', 'Propriedades Ativas', 'Propriedades Canceladas'];
+  var colors = ['#C5C5C5', 'yellow', 'red'];
 
-  // Loop through the categories and colors to generate the legend
   for (var i = 0; i < categories.length; i++) {
-    labels.push(
-      '<i style="background:' + colors[i] + '"></i> ' + categories[i]);
+    labels.push('<i style="background:' + colors[i] + '"></i> ' + categories[i]);
   }
 
   div.innerHTML = labels.join('<br>');
   return div;
 };
-
-// Add the legend to the map
 legend.addTo(map);
-
-// var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
