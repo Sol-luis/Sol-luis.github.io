@@ -13,7 +13,6 @@ coordsPanel.onAdd = function (map) {
   div.style.padding = '5px';
   div.style.border = '1px solid #ccc';
   div.style.fontSize = '11px';
-  div.innerHTML = 'Latitude: <span id="lat">-</span>, Longitude: <span id="lng">-</span>';
   return div;
 };
 coordsPanel.addTo(map);
@@ -59,6 +58,8 @@ fetch('data/pol_props_ES.geojson')
     }).addTo(map);
   });
 
+
+  
 // Fetch GeoJSON for municipalities
 fetch('data/gdf_muni_ES.geojson')
   .then(response => response.json())
@@ -109,6 +110,118 @@ fetch('data/gdf_muni_ES.geojson')
     map.addControl(searchControl);
   });
 
+
+// Variável para armazenar a camada de uso do solo
+var usoSoloLayer;
+var usoSoloLegend;
+
+// Função para obter a cor baseada na classe de uso do solo
+function getUsoSoloColor(classe) {
+  const colors = {
+    "Café": "#8B4513",
+    "Formação Florestal" :'#1F8D49',     // Marrom escuro
+    "Pastagem": "#F0FF00",               // Verde brilhante
+    "Outros usos agrícolas": "#FFD700",  // Dourado
+    "Corpo d'água": "#1E90FF",           // Azul forte
+    "Afloramento Rochoso": "#808080",    // Cinza médio
+    "Lavouras perenes": "#6B8E23",       // Verde oliva escuro
+    "Lavouras temporárias": "#FFA500",   // Laranja
+    "Vegetação Nativa": "#006400",       // Verde escuro
+    "Floresta Alagável": "#4682B4"       // Azul acinzentado
+  };
+  return colors[classe] || "#000000"; // Preto como padrão para classes desconhecidas
+}
+
+// Função para adicionar GeoJSON das classes de uso do solo
+fetch('data/es_uso_solo_vetor_reclassificado.geojson')
+  .then(response => response.json())
+  .then(data => {
+    usoSoloLayer = L.geoJSON(data, {
+      style: function (feature) {
+        return {
+          color: getUsoSoloColor(feature.properties.classe_uso_solo_mapbiomas),
+          weight: 1,
+          fillOpacity: 0.7
+        };
+      },
+      onEachFeature: function (feature, layer) {
+        var tooltipContent = 
+          "<strong>Classe de Uso do Solo:</strong> " + feature.properties.classe_uso_solo_mapbiomas + "<br>"
+        layer.bindTooltip(tooltipContent);
+
+        layer.on('mouseover', function () {
+          layer.bringToFront();
+        });
+      }
+    });
+  });
+
+// Função para criar e adicionar a legenda das classes de uso do solo
+function createUsoSoloLegend() {
+  usoSoloLegend = L.control({ position: 'bottomright' });
+  usoSoloLegend.onAdd = function (map) {
+    var div = L.DomUtil.create('div', 'info legend');
+    var labels = ['<strong>Usos do Solo</strong>'];
+    var classes = {
+      "Café": "#8B4513",
+      "Formação Florestal" :'#1F8D49',     // Marrom escuro
+      "Pastagem": "#F0FF00",               // Verde brilhante
+      "Outros usos agrícolas": "#FFD700",  // Dourado
+      "Corpo d'água": "#1E90FF",           // Azul forte
+      "Afloramento Rochoso": "#808080",    // Cinza médio
+      "Lavouras perenes": "#6B8E23",       // Verde oliva escuro
+      "Lavouras temporárias": "#FFA500",   // Laranja
+      "Vegetação Nativa": "##006400",       // Verde escuro
+      "Floresta Alagável": "#4682B4"       // Azul acinzentado
+  };
+    for (var classe in classes) {
+      labels.push('<i style="background:' + classes[classe] + '"></i> ' + classe);
+    }
+
+    div.innerHTML = labels.join('<br>');
+    return div;
+  };
+}
+
+// Criar a legenda (mas não adicionar ainda)
+createUsoSoloLegend();
+
+// Função para alternar entre a legenda e a camada de uso do solo
+function toggleUsoSoloLayer() {
+  var button = document.querySelector('.toggle-button');
+  
+  if (map.hasLayer(usoSoloLayer)) {
+    // Remover camada de uso do solo e restaurar a legenda original
+    map.removeLayer(usoSoloLayer);
+    map.removeControl(usoSoloLegend); // Remover legenda de uso do solo
+    legend.addTo(map); // Reativar a legenda original
+    button.innerHTML = 'Mostrar Uso do Solo';
+    button.style.backgroundColor = 'white';
+  } else {
+    // Adicionar camada de uso do solo e substituir a legenda
+    usoSoloLayer.addTo(map);
+    map.removeControl(legend); // Remover a legenda original
+    usoSoloLegend.addTo(map); // Adicionar legenda de uso do solo
+    button.innerHTML = 'Ocultar Uso do Solo';
+    button.style.backgroundColor = '#ccc';
+  }
+}
+
+// Adicionar um botão para alternar a camada
+var toggleButton = L.control({ position: 'bottomright' });
+toggleButton.onAdd = function (map) {
+  var button = L.DomUtil.create('button', 'toggle-button');
+  button.innerHTML = 'Mostrar Uso do Solo';
+
+  button.onclick = function () {
+    toggleUsoSoloLayer();
+  };
+
+  return button;
+};
+toggleButton.addTo(map);
+
+
 // Add legend
 var legend = L.control({ position: 'bottomright' });
 legend.onAdd = function (map) {
@@ -120,7 +233,6 @@ legend.onAdd = function (map) {
   for (var i = 0; i < categories.length; i++) {
     labels.push('<i style="background:' + colors[i] + '"></i> ' + categories[i]);
   }
-
   div.innerHTML = labels.join('<br>');
   return div;
 };

@@ -178,8 +178,10 @@ class reclassificando_vetores:
         """
         #Onde a coluna DN for igual a 0, adicionar uma nova coluna chamada 'classe_uso_solo' e atribuir o valor 'NO_DATA'
         df.loc[df['raster_val'] == 0, 'classe_uso_solo_mapbiomas'] = 'OUTROS'
+
+        df.loc[df['raster_val'] == 3, 'classe_uso_solo_mapbiomas'] = 'Vegetação Nativa'
         #Forest formation
-        df.loc[df['raster_val'] == 9, 'classe_uso_solo_mapbiomas'] = 'Vegetação Nativa'
+        df.loc[df['raster_val'] == 9, 'classe_uso_solo_mapbiomas'] = 'Formação Florestal'
         #Wetland
         df.loc[df['raster_val'] == 11, 'classe_uso_solo_mapbiomas'] = ' Floresta Alagável'
         #Pasture
