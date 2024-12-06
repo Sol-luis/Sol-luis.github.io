@@ -71,7 +71,7 @@ body {
 #map {
   height: 100vh; /* Full viewport height */
   width: 100%;  /* Full width */
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
   z-index: 1001;
@@ -80,10 +80,10 @@ body {
   line-height: 25px;
   color: #333; /* Dark text for contrast */
   background-color: white; /* Set the background to white */
-  padding: 20px; /* Add some padding around the legend */
+  padding: 10px; /* Add some padding around the legend */
   border-radius: 21px; /* Rounded corners for a smoother appearance */
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Add a shadow for a subtle 3D effect */
-  font-size: 19px
+  font-size: 18px
 }
 
 .legend i {
