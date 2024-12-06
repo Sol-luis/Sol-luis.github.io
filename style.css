@@ -1,15 +1,15 @@
 /* The rest of your styling remains the same */
 body {
-  /* background-color: #be9415; */
   font-family: Arial, sans-serif;
-  height: 100%
+  height: 100%;
+  margin: 0; /* Remove any default margin for the body */
 }
 
 .title {
   text-align: center;
   font-size: 16px;
   font-weight: bold;
-  margin-top: 20px; /* Add margin to adjust positioning */
+  margin-top: 20px;
 }
 
 .subtitle {
@@ -32,7 +32,7 @@ body {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 1002;  /* Ensure buttons stay above map and sidebar */
+  z-index: 1002; /* Ensure buttons stay above the map */
 }
 
 .floating-buttons .btn {
@@ -44,7 +44,7 @@ body {
   text-align: center;
   display: inline-block;
   font-size: 24px;
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
   transition: background-color 0.3s;
 }
 
@@ -62,94 +62,18 @@ body {
   border-radius: 0px;
   opacity: 0.5;
   text-shadow: 
- -2px -2px 2px white,   /* Left top */
-  2px -2px 2px white,   /* Right top */
- -2px  2px 2px white,   /* Left bottom */
-  2px  2px 2px white;   /* Right bottom */;
+    -2px -2px 2px white, /* Left top */
+    2px -2px 2px white,  /* Right top */
+    -2px  2px 2px white, /* Left bottom */
+    2px  2px 2px white;  /* Right bottom */
 }
 
-
-#sidebar {
-  width: 80px;  /* Narrow sidebar by default */
-  background-color: #000000;
-  color: rgb(217, 212, 212);
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 1002;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 10px 0;
-  transition: width 0.3s;
-  overflow: hidden; /* Ensure no text is shown when collapsed */
-}
-
-.sidebar-icons {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebar-icons li {
-  text-align: center;
-  padding: 15px 0;
-}
-
-.sidebar-icons li a {
-  color: rgb(237, 14, 14);
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: color 0.3s ease;
-}
-
-.sidebar-icons li a i {
-  font-size: 24px;
-}
-
-.sidebar-icons li a span {
-  font-size: 10px;
-  margin-top: 5px;
-  display: inline-block;
-  opacity: 0;  /* Hidden by default */
-  transition: opacity 0.3s ease;
-}
-
-.sidebar-icons li:hover a {
-  color: #FFD700;
-}
-
-#sidebar:hover {
-  width: 200px; /* Sidebar expands on hover */
-}
-
-#sidebar:hover .sidebar-icons li a span {
-  opacity: 1;
-  display: flex;
-    /* Show text labels when expanded */
-}
-
-/* Close button styling */
-.leaflet-sidebar-close {
-  text-align: center;
-}
-
-.leaflet-sidebar-close a {
-  color: rgb(0, 0, 0);
-  font-size: 24px;
-  padding: 10px;
-}
-
-/* Make sure the map stays to the right of the sidebar */
 #map {
-  height: 100vh;
-  width: 100%;  /* Calculate width of the map minus the sidebar width */
-  position: center;
+  height: 100vh; /* Full viewport height */
+  width: 100%;  /* Full width */
+  position: absolute;
   top: 0;
-  left: 200x;  /* Match the sidebar width */
+  left: 0;
   z-index: 1001;
 }
 .legend {
