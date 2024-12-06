@@ -6,7 +6,7 @@ import pandas as pd
 import os
 import fnmatch as fn
 import zipfile
-
+import re
 class abrindo_dados:
     @staticmethod
     def process_files(vault_files, pattern, file_type, zipped=False):
@@ -47,6 +47,10 @@ class abrindo_dados:
                         gdf = gpd.read_file(zip_vsi_path)
                         print(f"Dimensões do arquivo {list_files[0]}: {gdf.shape}")
                         return gdf
+                    if file_ext == '.geojson':
+                        gdf = gpd.read_file(zip_vsi_path)
+                        print(f"Dimensões do arquivo {list_files[0]}: {gdf.shape}")
+                        return gdf
                     elif file_ext == '.kml':
                         kml = gpd.read_file(zip_vsi_path)
                         print(f"Dimensões do arquivo {list_files[0]}: {kml.shape}")
@@ -66,6 +70,8 @@ class abrindo_dados:
                     zip_path = os.path.join(vault_files, zip_file)
                     if file_type == 'shp':
                         return process_vsizip(zip_path, '.shp')
+                    elif file_type =='geojson':
+                        return process_vsizip(zip_path, '.geojson')
                     elif file_type == 'kml':
                         return process_vsizip(zip_path, '.kml')
                     elif file_type == 'xlsx':
@@ -79,6 +85,13 @@ class abrindo_dados:
             # Processando sem .zip
             if file_type == 'shp':
                 list_files = [x for x in os.listdir(vault_files) if x.endswith('.shp') and fn.fnmatch(x, pattern)]
+                if list_files:
+                    gdf_list = [gpd.read_file(os.path.join(vault_files, f)) for f in list_files]
+                    gdf = pd.concat(gdf_list, ignore_index=True) if len(gdf_list) > 1 else gdf_list[0]
+                    print(f"Dimensões do(s) arquivo(s) {list_files}: {gdf.shape}")
+                    return gdf
+            elif file_type == 'geojson':
+                list_files = [x for x in os.listdir(vault_files) if x.endswith('.geojson') and fn.fnmatch(x, pattern)]
                 if list_files:
                     gdf_list = [gpd.read_file(os.path.join(vault_files, f)) for f in list_files]
                     gdf = pd.concat(gdf_list, ignore_index=True) if len(gdf_list) > 1 else gdf_list[0]
@@ -154,20 +167,100 @@ class reclassificando_vetores:
     @staticmethod
     def reclassificando_classes_uso_solo_mapbiomas(df):
         """ 
-        Objetivo: Função para reclassificar as classes de uso do solo fora da influencia do PRODES a partir do campo
-        'DN'
-        
+        Objetivo: 
+            Função para reclassificar as classes de uso do solo fora da influencia do PRODES a partir do campo "raster_val"
+
+        Parâmetros:
+            Geodataframe gerado a partir do Mapbiomas
+
+        Versão mapbiomas:
+            Coleção 09 - classificação de uso do solo no Espírito Santo
         """
         #Onde a coluna DN for igual a 0, adicionar uma nova coluna chamada 'classe_uso_solo' e atribuir o valor 'NO_DATA'
-        df.loc[df['raster_val'] == 3, 'classe_uso_solo_mapbiomas'] = 'VEGETACAO_NATIVA'
-        df.loc[df['raster_val'] == 4, 'classe_uso_solo_mapbiomas'] = 'VEGETACAO_NATIVA'
-        df.loc[df['raster_val'] == 15, 'classe_uso_solo_mapbiomas'] = 'PASTAGEM'
-
         df.loc[df['raster_val'] == 0, 'classe_uso_solo_mapbiomas'] = 'OUTROS'
-        df.loc[df['raster_val'] == 39, 'classe_uso_solo_mapbiomas'] = 'OUTROS'
-        df.loc[df['raster_val'] == 41, 'classe_uso_solo_mapbiomas'] = 'OUTROS'
-        df.loc[df['raster_val'] == 12, 'classe_uso_solo_mapbiomas'] = 'OUTROS'
-        df.loc[df['raster_val'] == 11, 'classe_uso_solo_mapbiomas'] = 'OUTROS'
-        df.loc[df['raster_val'] == 33, 'classe_uso_solo_mapbiomas'] = 'OUTROS'
+        #Forest formation
+        df.loc[df['raster_val'] == 9, 'classe_uso_solo_mapbiomas'] = 'Vegetação Nativa'
+        #Wetland
+        df.loc[df['raster_val'] == 11, 'classe_uso_solo_mapbiomas'] = ' Floresta Alagável'
+        #Pasture
+        df.loc[df['raster_val'] == 15, 'classe_uso_solo_mapbiomas'] = 'Pastagem'
+        #Outros usos
+        df.loc[df['raster_val'] == 21, 'classe_uso_solo_mapbiomas'] = 'Outros usos agrícolas'
+        #Outros usos
+        df.loc[df['raster_val'] == 25, 'classe_uso_solo_mapbiomas'] = 'Outros usos agrícolas'
+        #Urban Area
+        df.loc[df['raster_val'] == 29, 'classe_uso_solo_mapbiomas'] = 'Afloramento Rochoso'
+        #Rocky Outcrop
+        df.loc[df['raster_val'] == 33, 'classe_uso_solo_mapbiomas'] = 'Corpo dágua'
+        #Lavoura
+        df.loc[df['raster_val'] == 41, 'classe_uso_solo_mapbiomas'] = 'Lavouras temporárias'
+        #Café
+        df.loc[df['raster_val'] == 46, 'classe_uso_solo_mapbiomas'] = 'Café'
+        #Outras lavouras perenes
+        df.loc[df['raster_val'] == 48, 'classe_uso_solo_mapbiomas'] = 'Lavouras perenes'
 
         return df
+    
+    @staticmethod
+    def reclass_car(x):
+        """
+        Reclassifica os códigos de status do CAR em três categorias: "Ativo", "Cancelado" e "Pendente",
+        com base nos prefixos dos códigos.
+
+        Parâmetros:
+        - x (str): Código CAR a ser reclassificado.
+
+        Retorna:
+        - str: String indicando o status do CAR: "Ativo" se o código começar com "AT", 
+            "Cancelado" se começar com "CA", e "Pendente" se começar com "PE".
+        """
+        cl1 = re.compile("AT")
+        cl2 = re.compile("CA")
+        cl3 = re.compile("PE")
+        if cl1.match(x):
+            return "Ativo"
+        elif cl2.match(x):
+            return "Cancelado"
+        elif cl3.match(x):
+            return "Pendente"
+
+class limpeza_de_dados:
+    @staticmethod
+    def clean_header(df):
+        """
+        Limpa e padroniza os nomes das colunas de um DataFrame, convertendo todos os caracteres para minúsculas,
+        removendo espaços em branco nas extremidades e substituindo espaços por underscores.
+
+        Parâmetros:
+        - df (pd.DataFrame): DataFrame cujas colunas precisam ser padronizadas.
+
+        Retorna:
+        - pd.DataFrame: DataFrame com os nomes das colunas padronizados.
+        """
+        df.columns = [x.lower() for x in df.columns]
+        df.columns = [x.strip() for x in df.columns]
+        df.columns = [x.replace(' ', '_') for x in df.columns]
+        return df
+    
+class adicionando_dados:
+    @staticmethod
+    def add_area(df):
+        """
+        Adiciona uma coluna 'area_hectares' a um GeoDataFrame contendo a área de cada geometria em hectares.
+        A função muda temporariamente o sistema de coordenadas para EPSG 5880 (Albers Equal Area) para calcular a área corretamente
+        e depois retorna ao sistema original EPSG 4674 (SIRGAS 2000).
+
+        Parâmetros:
+        - df (gpd.GeoDataFrame): GeoDataFrame com uma coluna de geometria.
+
+        Retorna:
+        - gpd.GeoDataFrame: GeoDataFrame com a coluna 'area_hectares', contendo a área de cada geometria em hectares, arredondada para quatro casas decimais.
+        """
+
+        df = df.to_crs(epsg=5880)
+        df["area_hectares"] = df['geometry'].area/10000
+        df["area_hectares"] = df["area_hectares"].round(4)
+        #retornando ao crs original
+        df = df.to_crs(epsg=4674)
+        return df
+
