@@ -2,7 +2,7 @@ var map = L.map('map').setView([-19.46, -40.42], 8);
 
 // Add a tile layer (Imagery from ArcGIS)
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-  attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+  // attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 }).addTo(map);
 
 // Add coordinates panel
@@ -12,7 +12,7 @@ coordsPanel.onAdd = function (map) {
   div.style.backgroundColor = 'white';
   div.style.padding = '5px';
   div.style.border = '1px solid #ccc';
-  div.style.fontSize = '12px';
+  div.style.fontSize = '11px';
   div.innerHTML = 'Latitude: <span id="lat">-</span>, Longitude: <span id="lng">-</span>';
   return div;
 };
@@ -103,7 +103,7 @@ fetch('data/gdf_muni_ES.geojson')
     var searchControl = new L.Control.Search({
       layer: geojsonLayer,
       propertyName: 'NM_MUN',
-      zoom: 12,
+      zoom: 11,
       textPlaceholder: 'Digite aqui para procurar o município da propriedade'
     });
     map.addControl(searchControl);
