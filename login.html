@@ -13,17 +13,22 @@
             align-items: center; /* Center elements horizontally */
             height: 100vh;
             margin: 0;
-            background-color: #fff3bf;
+            background-color: #ffffff;
         }
         img {
-            width: 200px; /* Adjust size as needed */
-            margin-bottom: 20px; /* Space between the logo and the form */
+            width: 290px; /* Adjust size as needed */
+            margin-bottom: 5px; /* Space between the logo and the form */
+            border: 0px solid #050404;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 25px;
+            
+
         }
         form {
             padding: 20px;
             background: rgb(255, 255, 255);
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            border: 1px solid #050404;
+            border-radius: 25px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
             width: 250px;
@@ -34,16 +39,18 @@
             width: 100%;
             padding: 8px;
             margin-bottom: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border: 1px solid #ffffff;
+            background-color: #ccc;
+            border-radius: 25px;
         }
         button {
             padding: 8px 16px;
             background-color: #050a0f;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 20px;
             cursor: pointer;
+            width: 250px;
         }
         button:hover {
             background-color: #0056b3;
@@ -52,14 +59,14 @@
 </head>
 <body>
     <!-- Logo on top -->
-    <img src="assets/Logo_sol_3.jpeg" alt="Solidaridad Logo">
+    <img src="assets/Logo_Sol_e_Sucafina_2.png" alt="Solidaridad Logo">
 
     <!-- Login form -->
     <form id="loginForm">
-        <h2>Bem-vindo(a)</h2>
+        <!-- <h2>Bem-vindo(a)</h2> -->
         <input type="text" id="username" placeholder="Nome do usuário(a)" required>
         <input type="password" id="password" placeholder="Senha" required>
-        <button type="submit">Login</button>
+        <button type="submit">Entrar</button>
     </form>
 
     <!-- JavaScript for login -->
