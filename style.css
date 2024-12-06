@@ -105,27 +105,29 @@ body {
   width: 100px; /* Adjust size */
   z-index: 1000; /* Keep it on top of other elements */
 }
-
-/* Ensure legend is responsive */
+/* Legenda responsiva */
 @media (max-width: 768px) {
   .legend {
-    font-size: 14px; /* Adjust font size for smaller screens */
-    padding: 8px; /* Reduce padding for better fit */
-    bottom: 10px; /* Adjust position for smaller screens */
-    left: 10px; /* Adjust position for smaller screens */
+    font-size: 14px; /* Ajusta o tamanho da fonte para telas menores */
+    padding: 8px; /* Reduz o espaçamento interno */
+    bottom: 10px; /* Ajusta a posição para ficar visível */
+    left: 10px; /* Ajusta a posição horizontal */
+    z-index: 1002; /* Garante que a legenda esteja acima de outros elementos */
   }
 }
-
-.toggle-button {
-  font-size: 18px;
-  background-color: rgb(253, 253, 253);
-  border: 1px solid #ccc;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 25px;
-  font-weight: bold;
-}
-
-.toggle-button:hover {
-  background-color: #f0f0f0;
+/* Botão Toggle responsivo */
+@media (max-width: 768px) {
+  .toggle-button {
+    font-size: 15px; /* Ajusta o tamanho da fonte */
+    background-color: rgb(253, 253, 253); /* Cor de fundo clara */
+    border: 1px solid #ffffff; /* Borda branca */
+    padding: 5px 10px; /* Espaçamento interno */
+    cursor: pointer; /* Indica interatividade */
+    border-radius: 25px; /* Deixa o botão com bordas arredondadas */
+    font-weight: bold; /* Deixa o texto em negrito */
+    position: fixed; /* Garante que o botão esteja fixado na tela */
+    bottom: 50px; /* Posição vertical para não conflitar com outros elementos */
+    right: 10px; /* Posição horizontal */
+    z-index: 1003; /* Garante que o botão esteja acima de outros elementos */
+  }
 }
