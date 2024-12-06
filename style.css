@@ -71,7 +71,7 @@ body {
 #map {
   height: 100vh; /* Full viewport height */
   width: 100%;  /* Full width */
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   z-index: 1001;
