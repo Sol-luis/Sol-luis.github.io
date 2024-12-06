@@ -171,7 +171,7 @@ function createUsoSoloLegend() {
       "Afloramento Rochoso": "#808080",    // Cinza médio
       "Lavouras perenes": "#6B8E23",       // Verde oliva escuro
       "Lavouras temporárias": "#FFA500",   // Laranja
-      "Vegetação Nativa": "##006400",       // Verde escuro
+      "Vegetação Nativa": "#006400",       // Verde escuro
       "Floresta Alagável": "#4682B4"       // Azul acinzentado
   };
     for (var classe in classes) {
@@ -196,14 +196,14 @@ function toggleUsoSoloLayer() {
     map.removeControl(usoSoloLegend); // Remover legenda de uso do solo
     legend.addTo(map); // Reativar a legenda original
     button.innerHTML = 'Mostrar Uso do Solo';
-    button.style.backgroundColor = 'white';
+    
   } else {
     // Adicionar camada de uso do solo e substituir a legenda
     usoSoloLayer.addTo(map);
     map.removeControl(legend); // Remover a legenda original
     usoSoloLegend.addTo(map); // Adicionar legenda de uso do solo
     button.innerHTML = 'Ocultar Uso do Solo';
-    button.style.backgroundColor = '#ccc';
+    
   }
 }
 
