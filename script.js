@@ -105,7 +105,7 @@ fetch('data/gdf_muni_ES.geojson')
       layer: geojsonLayer,
       propertyName: 'NM_MUN',
       zoom: 11,
-      textPlaceholder: 'Digite aqui para procurar o município da propriedade'
+      textPlaceholder: 'Search by municipality'
     });
     map.addControl(searchControl);
   });
@@ -163,16 +163,16 @@ function createUsoSoloLegend() {
     var div = L.DomUtil.create('div', 'info legend');
     var labels = ['<strong>Usos do Solo</strong>'];
     var classes = {
-      "Café": "#8B4513",
-      "Formação Florestal" :'#1F8D49',     // Marrom escuro
-      "Pastagem": "#F0FF00",               // Verde brilhante
-      "Outros usos agrícolas": "#FFD700",  // Dourado
-      "Corpo d'água": "#1E90FF",           // Azul forte
-      "Afloramento Rochoso": "#808080",    // Cinza médio
-      "Lavouras perenes": "#6B8E23",       // Verde oliva escuro
-      "Lavouras temporárias": "#FFA500",   // Laranja
-      "Vegetação Nativa": "#006400",       // Verde escuro
-      "Floresta Alagável": "#4682B4"       // Azul acinzentado
+      "Coffee": "#8B4513",
+      "Forest Formation" :'#1F8D49',     // Marrom escuro
+      "Pasture": "#F0FF00",               // Verde brilhante
+      "Other Agricultural land uses": "#FFD700",  // Dourado
+      "Water": "#1E90FF",           // Azul forte
+      "Rocky Outcrop": "#808080",    // Cinza médio
+      "Parennial Crop": "#6B8E23",       // Verde oliva escuro
+      "Temporary Crop": "#FFA500",   // Laranja
+      "Native Forest": "#006400",       // Verde escuro
+      "Floodable Forest": "#4682B4"       // Azul acinzentado
   };
     for (var classe in classes) {
       labels.push('<i style="background:' + classes[classe] + '"></i> ' + classe);
@@ -195,14 +195,14 @@ function toggleUsoSoloLayer() {
     map.removeLayer(usoSoloLayer);
     map.removeControl(usoSoloLegend); // Remover legenda de uso do solo
     legend.addTo(map); // Reativar a legenda original
-    button.innerHTML = 'Mostrar Uso do Solo';
+    button.innerHTML = 'Switch to land use view';
     
   } else {
     // Adicionar camada de uso do solo e substituir a legenda
     usoSoloLayer.addTo(map);
     map.removeControl(legend); // Remover a legenda original
     usoSoloLegend.addTo(map); // Adicionar legenda de uso do solo
-    button.innerHTML = 'Ocultar Uso do Solo';
+    button.innerHTML = 'Switch to property limits';
     
   }
 }
@@ -211,7 +211,7 @@ function toggleUsoSoloLayer() {
 var toggleButton = L.control({ position: 'bottomright' });
 toggleButton.onAdd = function (map) {
   var button = L.DomUtil.create('button', 'toggle-button');
-  button.innerHTML = 'Mostrar Uso do Solo';
+  button.innerHTML = 'Switch to land use mode';
 
   button.onclick = function () {
     toggleUsoSoloLayer();
@@ -226,8 +226,8 @@ toggleButton.addTo(map);
 var legend = L.control({ position: 'bottomright' });
 legend.onAdd = function (map) {
   var div = L.DomUtil.create('div', 'info legend');
-  var labels = ['<strong>Legenda</strong>'];
-  var categories = ['Limites municipais', 'Propriedades Ativas', 'Propriedades Canceladas'];
+  var labels = ['<strong>Legend</strong>'];
+  var categories = ['Municipal limits', 'Active property', 'Cancelled property'];
   var colors = ['#C5C5C5', 'yellow', 'red'];
 
   for (var i = 0; i < categories.length; i++) {
