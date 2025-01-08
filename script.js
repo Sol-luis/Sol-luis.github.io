@@ -44,11 +44,11 @@ fetch('data/pol_props_ES.geojson')
       },
       onEachFeature: function (feature, layer) {
         var tooltipContent =
-          "<strong>Área da propriedade:</strong> " + feature.properties.area_hectares + "<br>" +
+          "<strong>Area(ha):</strong> " + feature.properties.area_hectares + "<br>" +
           "<strong>CAR:</strong> " + feature.properties.car + "<br>" +
-          "<strong>Nome do produtor:</strong> " + feature.properties.produtor + "<br>" +
-          "<strong>Municipio:</strong> " + feature.properties.municipio + "<br>" +
-          "<strong>Status da propriedade:</strong> " + feature.properties.status_car + "<br>";
+          "<strong>Farmers name:</strong> " + feature.properties.produtor + "<br>" +
+          "<strong>Municipality:</strong> " + feature.properties.municipio + "<br>" +
+          "<strong>Farm status:</strong> " + feature.properties.status_car + "<br>";
         layer.bindTooltip(tooltipContent);
 
         layer.on('mouseover', function (e) {
@@ -146,7 +146,7 @@ fetch('data/es_uso_solo_vetor_reclassificado.geojson')
       },
       onEachFeature: function (feature, layer) {
         var tooltipContent = 
-          "<strong>Classe de Uso do Solo:</strong> " + feature.properties.classe_uso_solo_mapbiomas + "<br>"
+          "<strong>Land uses:</strong> " + feature.properties.classe_uso_solo_mapbiomas + "<br>"
         layer.bindTooltip(tooltipContent);
 
         layer.on('mouseover', function () {
@@ -161,7 +161,7 @@ function createUsoSoloLegend() {
   usoSoloLegend = L.control({ position: 'bottomright' });
   usoSoloLegend.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'info legend');
-    var labels = ['<strong>Usos do Solo</strong>'];
+    var labels = ['<strong>Land use</strong>'];
     var classes = {
       "Coffee": "#8B4513",
       "Forest Formation" :'#1F8D49',     // Marrom escuro
