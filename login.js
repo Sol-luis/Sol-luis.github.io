@@ -18,6 +18,6 @@ document.getElementById("loginForm").addEventListener("submit", function (e) {
         // Redirect to your main page (e.g., main.html)
         window.location.href = "map.html";
     } else {
-        alert("Usuário ou senha estão incorretos");
+        alert("User or password are incorrect");
     }
 });
