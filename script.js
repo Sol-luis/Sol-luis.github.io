@@ -118,22 +118,22 @@ var usoSoloLegend;
 // Função para obter a cor baseada na classe de uso do solo
 function getUsoSoloColor(classe) {
   const colors = {
-    "Café": "#8B4513",
-    "Formação Florestal" :'#1F8D49',     // Marrom escuro
-    "Pastagem": "#F0FF00",               // Verde brilhante
-    "Outros usos agrícolas": "#FFD700",  // Dourado
-    "Corpo d'água": "#1E90FF",           // Azul forte
-    "Afloramento Rochoso": "#808080",    // Cinza médio
-    "Lavouras perenes": "#6B8E23",       // Verde oliva escuro
-    "Lavouras temporárias": "#FFA500",   // Laranja
-    "Vegetação Nativa": "#006400",       // Verde escuro
-    "Floresta Alagável": "#4682B4"       // Azul acinzentado
+    "Coffee": "#8B4513",
+    "Forest plantation" :'#1F8D49',     // Marrom escuro
+    "Pasture": "#F0FF00",               // Verde brilhante
+    "Other agricultural land use": "#FFD700",  // Dourado
+    "Water": "#1E90FF",           // Azul forte
+    "Rocky outcrop": "#808080",    // Cinza médio
+    "Perennial crops": "#6B8E23",       // Verde oliva escuro
+    "Temporary crops": "#FFA500",   // Laranja
+    "Forest formation": "#006400",       // Verde escuro
+    "Floodable forest": "#4682B4"       // Azul acinzentado
   };
   return colors[classe] || "#000000"; // Preto como padrão para classes desconhecidas
 }
 
 // Função para adicionar GeoJSON das classes de uso do solo
-fetch('data/es_uso_solo_vetor_reclassificado.geojson')
+fetch('data/es_uso_solo_vetor_reclassificado_eng.geojson')
   .then(response => response.json())
   .then(data => {
     usoSoloLayer = L.geoJSON(data, {
@@ -146,7 +146,7 @@ fetch('data/es_uso_solo_vetor_reclassificado.geojson')
       },
       onEachFeature: function (feature, layer) {
         var tooltipContent = 
-          "<strong>Land uses:</strong> " + feature.properties.classe_uso_solo_mapbiomas + "<br>"
+          "<strong>Land use:</strong> " + feature.properties.classe_uso_solo_mapbiomas + "<br>"
         layer.bindTooltip(tooltipContent);
 
         layer.on('mouseover', function () {
@@ -163,16 +163,16 @@ function createUsoSoloLegend() {
     var div = L.DomUtil.create('div', 'info legend');
     var labels = ['<strong>Land use</strong>'];
     var classes = {
-      "Coffee": "#8B4513",
-      "Forest Formation" :'#1F8D49',     // Marrom escuro
-      "Pasture": "#F0FF00",               // Verde brilhante
-      "Other Agricultural land uses": "#FFD700",  // Dourado
-      "Water": "#1E90FF",           // Azul forte
-      "Rocky Outcrop": "#808080",    // Cinza médio
-      "Parennial Crop": "#6B8E23",       // Verde oliva escuro
-      "Temporary Crop": "#FFA500",   // Laranja
-      "Native Forest": "#006400",       // Verde escuro
-      "Floodable Forest": "#4682B4"       // Azul acinzentado
+    "Coffee": "#8B4513",
+    "Forest plantation" :'#1F8D49',     // Marrom escuro
+    "Pasture": "#F0FF00",               // Verde brilhante
+    "Other agricultural land use": "#FFD700",  // Dourado
+    "Water": "#1E90FF",           // Azul forte
+    "Rocky outcrop": "#808080",    // Cinza médio
+    "Perennial crops": "#6B8E23",       // Verde oliva escuro
+    "Temporary crops": "#FFA500",   // Laranja
+    "Forest formation": "#006400",       // Verde escuro
+    "Floodable forest": "#4682B4"       // Azul acinzentado
   };
     for (var classe in classes) {
       labels.push('<i style="background:' + classes[classe] + '"></i> ' + classe);
