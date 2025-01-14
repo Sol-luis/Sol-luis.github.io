@@ -7,6 +7,8 @@ import os
 import fnmatch as fn
 import zipfile
 import re
+
+
 class abrindo_dados:
     @staticmethod
     def process_files(vault_files, pattern, file_type, zipped=False):
@@ -37,84 +39,74 @@ class abrindo_dados:
         """
     
         def process_vsizip(zip_path, file_ext):
-            # Create the /vsizip/ path for GDAL to read directly from the zip
             with zipfile.ZipFile(zip_path, 'r') as z:
-                list_files = [f for f in z.namelist() if f.endswith(file_ext) and fn.fnmatch(f, pattern)]
+                print("Arquivos no ZIP:", z.namelist())
+
+                # Correspondência de arquivos usando basename
+                list_files = [f for f in z.namelist() if f.endswith(file_ext) and fn.fnmatch(os.path.basename(f), pattern)]
                 if list_files:
-                    # Using /vsizip/ to read the file directly from the zip archive
                     zip_vsi_path = f'/vsizip/{zip_path}/{list_files[0]}'
-                    if file_ext == '.shp':
-                        gdf = gpd.read_file(zip_vsi_path)
-                        print(f"Dimensões do arquivo {list_files[0]}: {gdf.shape}")
-                        return gdf
-                    if file_ext == '.geojson':
-                        gdf = gpd.read_file(zip_vsi_path)
-                        print(f"Dimensões do arquivo {list_files[0]}: {gdf.shape}")
-                        return gdf
-                    elif file_ext == '.kml':
-                        kml = gpd.read_file(zip_vsi_path)
-                        print(f"Dimensões do arquivo {list_files[0]}: {kml.shape}")
-                        return kml
-                    elif file_ext == '.xlsx':
-                        xlsx = pd.read_excel(zip_vsi_path)
-                        print(f"Dimensões do arquivo {list_files[0]}: {xlsx.shape}")
-                        return xlsx
-                print("Nenhum arquivo correspondente encontrado no ZIP.")
+                    try:
+                        if file_ext in ['.shp', '.geojson', '.kml', '.gpkg']:
+                            gdf = gpd.read_file(zip_vsi_path)
+                            print(f"Dimensões do arquivo {list_files[0]}: {gdf.shape}")
+                            return gdf
+                        elif file_ext == '.xlsx':
+                            xlsx = pd.read_excel(zip_vsi_path)
+                            print(f"Dimensões do arquivo {list_files[0]}: {xlsx.shape}")
+                            return xlsx
+                    except Exception as e:
+                        print(f"Erro ao ler o arquivo {list_files[0]}: {e}")
+                        return None
+                
+                print(f"Nenhum arquivo correspondente encontrado no ZIP {zip_path}. Padrão: {pattern}, Arquivos: {z.namelist()}")
                 return None
 
         if zipped:
-            zip_files = [x for x in os.listdir(vault_files) if x.endswith('.zip')]
-            if zip_files:
-                print(f"Arquivos ZIP encontrados: {zip_files}")
-                for zip_file in zip_files:
-                    zip_path = os.path.join(vault_files, zip_file)
-                    if file_type == 'shp':
-                        return process_vsizip(zip_path, '.shp')
-                    elif file_type =='geojson':
-                        return process_vsizip(zip_path, '.geojson')
-                    elif file_type == 'kml':
-                        return process_vsizip(zip_path, '.kml')
-                    elif file_type == 'xlsx':
-                        return process_vsizip(zip_path, '.xlsx')
-                    elif file_type == 'tif':
-                        return process_vsizip(zip_path, '.tif')
+            list_files = [x for x in os.listdir(vault_files) if x.endswith('.zip') and fn.fnmatch(x, pattern)]
+            if list_files:
+                print(f"Arquivos ZIP correspondentes encontrados: {list_files}")
+                for zip_file in list_files:
+                        zip_path = os.path.join(vault_files, zip_file)
+                        print(f"Arquivos correspondentes encontrados: {list_files}")
+                        zip_path = os.path.join(vault_files, zip_file)
+                        if file_type == 'shp':
+                            print(f"Processando o arquivo {zip_file}")
+                            return process_vsizip(zip_path, '.shp')
+                        elif file_type == 'geojson':
+                            print(f"Processando o arquivo {zip_file}")
+                            return process_vsizip(zip_path, '.geojson')
+                        elif file_type == 'kml':
+                            print(f"Processando o arquivo {zip_file}")
+                            return process_vsizip(zip_path, '.kml')
+                        elif file_type == 'xlsx':
+                            print(f"Processando o arquivo {zip_file}")
+                            return process_vsizip(zip_path, '.xlsx')
+                        elif file_type == 'tif':
+                            print(f"Processando o arquivo {zip_file}")
+                            return process_vsizip(zip_path, '.tif')
+                        elif file_type == 'gpkg':
+                            print(f"Processando o arquivo {zip_file}")
+                            return process_vsizip(zip_path, '.gpkg')
             else:
-                print("Nenhum arquivo ZIP encontrado.")
-                return None
+                  print("Nenhum arquivo ZIP encontrado.")
+            return None
+        # Se não estiver em ZIP   
         else:
-            # Processando sem .zip
-            if file_type == 'shp':
-                list_files = [x for x in os.listdir(vault_files) if x.endswith('.shp') and fn.fnmatch(x, pattern)]
-                if list_files:
-                    gdf_list = [gpd.read_file(os.path.join(vault_files, f)) for f in list_files]
-                    gdf = pd.concat(gdf_list, ignore_index=True) if len(gdf_list) > 1 else gdf_list[0]
-                    print(f"Dimensões do(s) arquivo(s) {list_files}: {gdf.shape}")
-                    return gdf
-            elif file_type == 'geojson':
+            if file_type == 'geojson':
                 list_files = [x for x in os.listdir(vault_files) if x.endswith('.geojson') and fn.fnmatch(x, pattern)]
                 if list_files:
                     gdf_list = [gpd.read_file(os.path.join(vault_files, f)) for f in list_files]
                     gdf = pd.concat(gdf_list, ignore_index=True) if len(gdf_list) > 1 else gdf_list[0]
                     print(f"Dimensões do(s) arquivo(s) {list_files}: {gdf.shape}")
                     return gdf
-            elif file_type == 'kml':
-                list_files = [x for x in os.listdir(vault_files) if x.endswith('.kml') and fn.fnmatch(x, pattern)]
+            elif file_type == 'gpkg':
+                list_files = [x for x in os.listdir(vault_files) if x.endswith('.gpkg') and fn.fnmatch(x, pattern)]
                 if list_files:
-                    kml = gpd.read_file(os.path.join(vault_files, list_files[0]))
-                    print(f"Dimensões do arquivo {list_files[0]}: {kml.shape}")
-                    return kml
-            elif file_type == 'xlsx':
-                list_files = [x for x in os.listdir(vault_files) if fn.fnmatch(x, pattern)]
-                if list_files:
-                    xlsx = pd.read_excel(os.path.join(vault_files, list_files[0]))
-                    print(f"Dimensões do arquivo {list_files[0]}: {xlsx.shape}")
-                    return xlsx
-            elif file_type == 'tif':
-                list_files = [x for x in os.listdir(vault_files) if x.endswith('.tif')]
-                print("Arquivos de imagem .tif:")
-                for tif in list_files:
-                    print(tif)
-                return list_files
+                    gdf_list = [gpd.read_file(os.path.join(vault_files, f)) for f in list_files]
+                    gdf = pd.concat(gdf_list, ignore_index=True) if len(gdf_list) > 1 else gdf_list[0]
+                    print(f"Dimensões do(s) arquivo(s) {list_files}: {gdf.shape}")
+                    return gdf
             else:
                 print("Tipo de arquivo não reconhecido.")
                 return None
@@ -165,7 +157,7 @@ class caixa_de_ferramentas_raster:
 
 class reclassificando_vetores:
     @staticmethod
-    def reclassificando_classes_uso_solo_mapbiomas(df):
+    def reclassificando_classes_uso_solo_mapbiomas_eng(df):
         """ 
         Objetivo: 
             Função para reclassificar as classes de uso do solo fora da influencia do PRODES a partir do campo "raster_val"
@@ -177,32 +169,76 @@ class reclassificando_vetores:
             Coleção 09 - classificação de uso do solo no Espírito Santo
         """
         #Onde a coluna DN for igual a 0, adicionar uma nova coluna chamada 'classe_uso_solo' e atribuir o valor 'NO_DATA'
-        df.loc[df['raster_val'] == 0, 'classe_uso_solo_mapbiomas'] = 'OUTROS'
+        df.loc[df['raster_val'] == 0, 'classe_uso_solo_mapbiomas'] = 'Other land use'
 
-        df.loc[df['raster_val'] == 3, 'classe_uso_solo_mapbiomas'] = 'Vegetação Nativa'
+        df.loc[df['raster_val'] == 3, 'classe_uso_solo_mapbiomas'] = 'Forest formation'
         #Forest formation
-        df.loc[df['raster_val'] == 9, 'classe_uso_solo_mapbiomas'] = 'Formação Florestal'
+        df.loc[df['raster_val'] == 9, 'classe_uso_solo_mapbiomas'] = 'Forest plantation'
         #Wetland
-        df.loc[df['raster_val'] == 11, 'classe_uso_solo_mapbiomas'] = ' Floresta Alagável'
+        df.loc[df['raster_val'] == 11, 'classe_uso_solo_mapbiomas'] = 'Floodable forest'
         #Pasture
-        df.loc[df['raster_val'] == 15, 'classe_uso_solo_mapbiomas'] = 'Pastagem'
+        df.loc[df['raster_val'] == 15, 'classe_uso_solo_mapbiomas'] = 'Pasture'
         #Outros usos
-        df.loc[df['raster_val'] == 21, 'classe_uso_solo_mapbiomas'] = 'Outros usos agrícolas'
+        df.loc[df['raster_val'] == 21, 'classe_uso_solo_mapbiomas'] = 'Other agricultural land use'
         #Outros usos
-        df.loc[df['raster_val'] == 25, 'classe_uso_solo_mapbiomas'] = 'Outros usos agrícolas'
+        df.loc[df['raster_val'] == 25, 'classe_uso_solo_mapbiomas'] = 'Other agricultural land use'
         #Urban Area
-        df.loc[df['raster_val'] == 29, 'classe_uso_solo_mapbiomas'] = 'Afloramento Rochoso'
+        df.loc[df['raster_val'] == 29, 'classe_uso_solo_mapbiomas'] = 'Rocky outcrop'
         #Rocky Outcrop
-        df.loc[df['raster_val'] == 33, 'classe_uso_solo_mapbiomas'] = 'Corpo dágua'
+        df.loc[df['raster_val'] == 33, 'classe_uso_solo_mapbiomas'] = 'Water'
         #Lavoura
-        df.loc[df['raster_val'] == 41, 'classe_uso_solo_mapbiomas'] = 'Lavouras temporárias'
+        df.loc[df['raster_val'] == 41, 'classe_uso_solo_mapbiomas'] = 'Temporary crops'
         #Café
-        df.loc[df['raster_val'] == 46, 'classe_uso_solo_mapbiomas'] = 'Café'
+        df.loc[df['raster_val'] == 46, 'classe_uso_solo_mapbiomas'] = 'Coffee'
         #Outras lavouras perenes
-        df.loc[df['raster_val'] == 48, 'classe_uso_solo_mapbiomas'] = 'Lavouras perenes'
+        df.loc[df['raster_val'] == 48, 'classe_uso_solo_mapbiomas'] = 'Perennial crops'
 
         return df
     
+    @staticmethod
+    def reclassificando_classes_uso_solo_mapbiomas_pt(df):
+            """ 
+        Objetivo: 
+            Função para reclassificar as classes de uso do solo fora da influencia do PRODES a partir do campo "raster_val"
+
+        Parâmetros:
+            Geodataframe gerado a partir do Mapbiomas
+
+        Versão mapbiomas:
+            Coleção 09 - classificação de uso do solo no Espírito Santo
+        """
+        #Onde a coluna DN for igual a 0, adicionar uma nova coluna chamada 'classe_uso_solo' e atribuir o valor 'NO_DATA'
+            df.loc[df['raster_val'] == 0, 'classe_uso_solo_mapbiomas'] = 'Outros usos do solo'
+
+            df.loc[df['raster_val'] == 3, 'classe_uso_solo_mapbiomas'] = 'Formação florestal'
+            #Forest formation
+            df.loc[df['raster_val'] == 9, 'classe_uso_solo_mapbiomas'] = 'Silvicultura'
+            #Wetland
+            df.loc[df['raster_val'] == 11, 'classe_uso_solo_mapbiomas'] = 'Floresta alagável'
+            #Pasture
+            df.loc[df['raster_val'] == 15, 'classe_uso_solo_mapbiomas'] = 'Pastagem'
+            #Outros usos
+            df.loc[df['raster_val'] == 21, 'classe_uso_solo_mapbiomas'] = 'Outros usos agrícolas'
+            #Outros usos
+            df.loc[df['raster_val'] == 25, 'classe_uso_solo_mapbiomas'] = 'Outros usos agrícolas'
+            #Urban Area
+            df.loc[df['raster_val'] == 29, 'classe_uso_solo_mapbiomas'] = 'Afloramento rochoso'
+            #Rocky Outcrop
+            df.loc[df['raster_val'] == 33, 'classe_uso_solo_mapbiomas'] = 'Corpo de água'
+            #Lavoura
+            df.loc[df['raster_val'] == 41, 'classe_uso_solo_mapbiomas'] = 'Lavouras temporárias'
+            #Café
+            df.loc[df['raster_val'] == 46, 'classe_uso_solo_mapbiomas'] = 'Café'
+            #Outras lavouras perenes
+            df.loc[df['raster_val'] == 48, 'classe_uso_solo_mapbiomas'] = 'Lavouras perenes'
+
+            return df
+        
+
+
+
+
+
     @staticmethod
     def reclass_car(x):
         """
@@ -220,11 +256,11 @@ class reclassificando_vetores:
         cl2 = re.compile("CA")
         cl3 = re.compile("PE")
         if cl1.match(x):
-            return "Ativo"
+            return "Active"
         elif cl2.match(x):
-            return "Cancelado"
+            return "Cancelled"
         elif cl3.match(x):
-            return "Pendente"
+            return "Pending"
 
 class limpeza_de_dados:
     @staticmethod
@@ -265,4 +301,52 @@ class adicionando_dados:
         #retornando ao crs original
         df = df.to_crs(epsg=4674)
         return df
+    
+class caixa_de_ferramentas_vetores:
+    @staticmethod
+    def clip_vector_by_vector(pol1, pol2):
+        """
+        vars: 
+        pol1: gpd.GeoDataFrame variable
+        pol2: gpd.GeoDataFrame variable
+
+        Returns:
+        clipped: gpd.GeoDataFrame
+
+        """
+
+        if pol1.crs != pol2.crs:
+            print('crs are different')
+            pol1 = pol1.to_crs(pol2.crs)
+        else:
+            print('crs are the same')
+        
+        clipped = gpd.clip(pol1, pol2)
+        if clipped.length == 0:
+            return print('clipped is empty')
+        else:
+            print('clipped is not empty')
+            return clipped
+        
+    @staticmethod
+    def spatial_joining(df1, df2, how,  predicate):
+        """
+        vars: 
+        df1: gpd.GeoDataFrame variable
+        df2: gpd.GeoDataFrame variable
+
+        Returns:
+        joined: gpd.GeoDataFrame
+
+        """
+        if df1.crs != df2.crs:
+            print('crs are different')
+            df1 = df1.to_crs(df2.crs)
+        else:
+            print('crs are the same')
+        joined = gpd.sjoin(df1, df2, how=how, predicate=predicate)
+        return joined
+        
+        
+
 
