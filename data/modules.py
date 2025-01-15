@@ -347,6 +347,38 @@ class caixa_de_ferramentas_vetores:
         joined = gpd.sjoin(df1, df2, how=how, predicate=predicate)
         return joined
         
+class pos_analise_de_dados:
+    @staticmethod        
+    def calculate_stats(df, stats=['mean', 'median', 'std', 'max']):
+        """
+        Calcula estatísticas (média, mediana, desvio padrão, máximo, etc.) para as colunas numéricas de um DataFrame.
         
+        Args:
+            df (pd.DataFrame): O DataFrame de entrada.
+            stats (list): Lista de estatísticas a serem calculadas. Padrão: ['mean', 'median', 'std', 'max'].
+
+        Returns:
+            pd.DataFrame: DataFrame com as estatísticas calculadas.
+        """
+        # Dicionário para armazenar os DataFrames de estatísticas
+        stat_dfs = {}
+
+        # Calcula cada estatística especificada e armazena no dicionário
+        for stat in stats:
+            func = getattr(df, stat)  # Obtém a função correspondente (mean, median, etc.)
+            stat_df = func(axis=0, numeric_only=True)
+            stat_dfs[stat] = pd.DataFrame(stat_df).reset_index(names=['Variável numérica'])
+            stat_dfs[stat].columns = ['Variável numérica', stat]
+        
+        # Concatena todos os DataFrames de estatísticas em um único DataFrame
+        combined_stats = pd.concat(stat_dfs.values(), axis=1)
+
+        # Remove colunas duplicadas (como 'ano' repetido em cada DataFrame)
+        combined_stats = combined_stats.loc[:, ~combined_stats.columns.duplicated()]
+        
+        # Renomeia as colunas para melhor entendimento
+        combined_stats.columns = ['Variável numérica'] + stats
+
+        return combined_stats
 
 
