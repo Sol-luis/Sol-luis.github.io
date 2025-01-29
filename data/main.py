@@ -11,10 +11,8 @@ def main():
 
 
     # Processes
-    raster = caixa_de_ferramentas_raster.clip_raster_by_shapefile(raster_path, shapefile_path, output_path)
+    raster = caixa_de_ferramentas_raster.clip_raster_by_shapefile(raster_path, shapefile_path, output_path, buffer=1000)
     vetorizado = caixa_de_ferramentas_raster.polygonize_raster(input_raster_recortado, output_path_vector, vector_file_name)
-
-
 
 
 if __name__ == "__main__":
