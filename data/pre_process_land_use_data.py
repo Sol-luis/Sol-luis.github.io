@@ -9,7 +9,7 @@ from modules import abrindo_dados, reclassificando_vetores, adicionando_dados
 
 ### Abrindo arquivos xlsx e shapefile ###
 vault_files = "/home/luisthethormes/01_sol/geo-dev/Sol-luis.github.io/data"
-uso_solo =  abrindo_dados.process_files(vault_files, "*uso_do_solo*", 'geojson')
+uso_solo =  abrindo_dados.process_files(vault_files, "es_uso_do_solo_vetor.geojson", 'geojson')
 uso_solo = uso_solo[uso_solo['raster_val'] > 0]
 print(uso_solo.raster_val.value_counts().reset_index().sort_values(by=['index']))
 
