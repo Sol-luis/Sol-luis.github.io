@@ -113,9 +113,20 @@ class abrindo_dados:
 
 class caixa_de_ferramentas_raster:
     @staticmethod
-    def clip_raster_by_shapefile(raster_path, shapefile_path, output_path):
+    def clip_raster_by_shapefile(raster_path, shapefile_path, output_path, buffer=0):
         with rasterio.open(raster_path) as src:
             shapefile = gpd.read_file(shapefile_path) #lendo vetor
+            print(shapefile.crs)
+            if shapefile.crs != src.crs:
+                shapefile = shapefile.to_crs(src.crs)
+
+            if buffer > 0:
+                print("Aplicando buffer...alterando epsg para 5880")
+                shapefile = shapefile.to_crs(epsg=5880)
+                shapefile['geometry'] = shapefile.geometry.buffer(buffer)
+                shapefile = shapefile.to_crs(epsg=4674)
+                print("Buffer aplicado com sucesso!")
+
             shapefile = shapefile.to_crs(src.crs) #transformando coordenada do vetor para coordenada do raster
             out_image, out_transform = mask(src,
                                             shapefile.geometry,
@@ -235,10 +246,6 @@ class reclassificando_vetores:
             return df
         
 
-
-
-
-
     @staticmethod
     def reclass_car(x):
         """
@@ -331,6 +338,8 @@ class caixa_de_ferramentas_vetores:
     @staticmethod
     def spatial_joining(df1, df2, how,  predicate):
         """
+        -> 
+
         vars: 
         df1: gpd.GeoDataFrame variable
         df2: gpd.GeoDataFrame variable
@@ -346,16 +355,44 @@ class caixa_de_ferramentas_vetores:
             print('crs are the same')
         joined = gpd.sjoin(df1, df2, how=how, predicate=predicate)
         return joined
+    
+    @staticmethod
+    def spatial_intersect(df1, df2, align=False):
+        """
+        ->
         
+        """
+        if df1.crs != df2.crs:
+            print('crs are different')
+            df1 = df1.to_crs(df2.crs)
+        else:
+            print('crs are the same')
+        intersected = df1.intersection(df2, align=align)
+        return intersected
+    
+    @staticmethod
+    def spatial_intersection(df1, df2):
+        """
+        ->
+        
+        """
+        if df1.crs != df2.crs:
+            print('crs are different')
+            df1 = df1.to_crs(df2.crs)
+        else:
+            print('crs are the same')
+        intersection = df1.overlay(df2, how='intersection')
+        return intersection
+            
 class pos_analise_de_dados:
     @staticmethod        
-    def calculate_stats(df, stats=['mean', 'median', 'std', 'max']):
+    def calculate_stats(df, stats=['mean', 'median', 'std', 'max', 'sum']):
         """
         Calcula estatísticas (média, mediana, desvio padrão, máximo, etc.) para as colunas numéricas de um DataFrame.
         
         Args:
             df (pd.DataFrame): O DataFrame de entrada.
-            stats (list): Lista de estatísticas a serem calculadas. Padrão: ['mean', 'median', 'std', 'max'].
+            stats (list): Lista de estatísticas a serem calculadas. Padrão: ['mean', 'median', 'std', 'max', 'sum', 'count'].
 
         Returns:
             pd.DataFrame: DataFrame com as estatísticas calculadas.
@@ -365,20 +402,25 @@ class pos_analise_de_dados:
 
         # Calcula cada estatística especificada e armazena no dicionário
         for stat in stats:
-            func = getattr(df, stat)  # Obtém a função correspondente (mean, median, etc.)
-            stat_df = func(axis=0, numeric_only=True)
+            if stat == 'count':
+            # Contagem considerando apenas valores > 0
+                stat_df = (df > 0.0).sum(axis=0, numeric_only=True)
+            else:
+                # Obtém a função correspondente (mean, median, etc.)
+                func = getattr(df, stat)
+                stat_df = func(axis=0, numeric_only=True)
+
+            # Armazena os resultados no dicionário
             stat_dfs[stat] = pd.DataFrame(stat_df).reset_index(names=['Variável numérica'])
             stat_dfs[stat].columns = ['Variável numérica', stat]
-        
+
         # Concatena todos os DataFrames de estatísticas em um único DataFrame
         combined_stats = pd.concat(stat_dfs.values(), axis=1)
 
-        # Remove colunas duplicadas (como 'ano' repetido em cada DataFrame)
+        # Remove colunas duplicadas (como 'Variável numérica' repetida em cada DataFrame)
         combined_stats = combined_stats.loc[:, ~combined_stats.columns.duplicated()]
-        
+
         # Renomeia as colunas para melhor entendimento
-        combined_stats.columns = ['Variável numérica'] + stats
-
+        combined_stats.columns = ['Variável numérica'] + stats            
         return combined_stats
-
 
