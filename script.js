@@ -46,9 +46,9 @@ fetch('data/pol_props_ES.geojson')
         var tooltipContent =
           "<strong>Area(ha):</strong> " + feature.properties.area_hectares + "<br>" +
           "<strong>CAR:</strong> " + feature.properties.car + "<br>" +
-          "<strong>Farmers name:</strong> " + feature.properties.produtor + "<br>" +
-          "<strong>Municipality:</strong> " + feature.properties.municipio + "<br>" +
-          "<strong>Farm status:</strong> " + feature.properties.status_car + "<br>";
+          "<strong>Nome do Produtor:</strong> " + feature.properties.produtor + "<br>" +
+          "<strong>Municipo:</strong> " + feature.properties.municipio + "<br>" +
+          "<strong>Status do CAR:</strong> " + feature.properties.status_car + "<br>";
         layer.bindTooltip(tooltipContent);
 
         layer.on('mouseover', function (e) {
@@ -105,7 +105,7 @@ fetch('data/gdf_muni_ES.geojson')
       layer: geojsonLayer,
       propertyName: 'NM_MUN',
       zoom: 11,
-      textPlaceholder: 'Search by municipality'
+      textPlaceholder: 'Insira o nome do municipio...'
     });
     map.addControl(searchControl);
   });
@@ -115,25 +115,26 @@ fetch('data/gdf_muni_ES.geojson')
 var usoSoloLayer;
 var usoSoloLegend;
 
+
 // Função para obter a cor baseada na classe de uso do solo
 function getUsoSoloColor(classe) {
   const colors = {
-    "Coffee": "#8B4513",
-    "Forest plantation" :'#1F8D49',     // Marrom escuro
-    "Pasture": "#F0FF00",               // Verde brilhante
-    "Other agricultural land use": "#FFD700",  // Dourado
-    "Water": "#1E90FF",           // Azul forte
-    "Rocky outcrop": "#808080",    // Cinza médio
-    "Perennial crops": "#6B8E23",       // Verde oliva escuro
-    "Temporary crops": "#FFA500",   // Laranja
-    "Forest formation": "#006400",       // Verde escuro
-    "Floodable forest": "#4682B4"       // Azul acinzentado
+    "Café": "#8B4513",
+    "Silvicultura" :'#1F8D49',     // Marrom escuro
+    "Pastagem": "#F0FF00",               // Verde brilhante
+    "Outros usos agrícolas": "#FFD700",  // Dourado
+    "Corpo de água'": "#1E90FF",           // Azul forte
+    "Afloramento rochoso": "#808080",    // Cinza médio
+    "Lavouras perenes": "#6B8E23",       // Verde oliva escuro
+    "Lavouras temporárias": "#FFA500",   // Laranja
+    "Formação florestal": "#006400",       // Verde escuro
+    "Floresta alagável": "#4682B4"       // Azul acinzentado
   };
   return colors[classe] || "#000000"; // Preto como padrão para classes desconhecidas
 }
 
 // Função para adicionar GeoJSON das classes de uso do solo
-fetch('data/es_uso_solo_vetor_reclassificado_eng.geojson')
+fetch('data/es_uso_solo_vetor_reclassificado_pt.geojson')
   .then(response => response.json())
   .then(data => {
     usoSoloLayer = L.geoJSON(data, {
@@ -146,7 +147,7 @@ fetch('data/es_uso_solo_vetor_reclassificado_eng.geojson')
       },
       onEachFeature: function (feature, layer) {
         var tooltipContent = 
-          "<strong>Land use:</strong> " + feature.properties.classe_uso_solo_mapbiomas + "<br>"
+          "<strong>Uso do Solo:</strong> " + feature.properties.classe_uso_solo_mapbiomas + "<br>"
         layer.bindTooltip(tooltipContent);
 
         layer.on('mouseover', function () {
@@ -161,18 +162,18 @@ function createUsoSoloLegend() {
   usoSoloLegend = L.control({ position: 'bottomright' });
   usoSoloLegend.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'info legend');
-    var labels = ['<strong>Land use</strong>'];
+    var labels = ['<strong>Uso do Solo</strong>'];
     var classes = {
-    "Coffee": "#8B4513",
-    "Forest plantation" :'#1F8D49',     // Marrom escuro
-    "Pasture": "#F0FF00",               // Verde brilhante
-    "Other agricultural land use": "#FFD700",  // Dourado
-    "Water": "#1E90FF",           // Azul forte
-    "Rocky outcrop": "#808080",    // Cinza médio
-    "Perennial crops": "#6B8E23",       // Verde oliva escuro
-    "Temporary crops": "#FFA500",   // Laranja
-    "Forest formation": "#006400",       // Verde escuro
-    "Floodable forest": "#4682B4"       // Azul acinzentado
+    "Café": "#8B4513",
+    "Silvicultura" :'#1F8D49',     // Marrom escuro
+    "Pastagem": "#F0FF00",               // Verde brilhante
+    "Outros usos agrícolas": "#FFD700",  // Dourado
+    "Corpo de água'": "#1E90FF",           // Azul forte
+    "Afloramento rochoso": "#808080",    // Cinza médio
+    "Lavouras perenes": "#6B8E23",       // Verde oliva escuro
+    "Lavouras temporárias": "#FFA500",   // Laranja
+    "Formação florestal": "#006400",       // Verde escuro
+    "Floresta alagável": "#4682B4"       // Azul acinzentado
   };
     for (var classe in classes) {
       labels.push('<i style="background:' + classes[classe] + '"></i> ' + classe);
@@ -195,14 +196,14 @@ function toggleUsoSoloLayer() {
     map.removeLayer(usoSoloLayer);
     map.removeControl(usoSoloLegend); // Remover legenda de uso do solo
     legend.addTo(map); // Reativar a legenda original
-    button.innerHTML = 'Switch to land use view';
+    button.innerHTML = 'Mudar para Uso do Solo';
     
   } else {
     // Adicionar camada de uso do solo e substituir a legenda
     usoSoloLayer.addTo(map);
     map.removeControl(legend); // Remover a legenda original
     usoSoloLegend.addTo(map); // Adicionar legenda de uso do solo
-    button.innerHTML = 'Switch to property limits';
+    button.innerHTML = 'Mudar para limite das Propriedades Rurais';
     
   }
 }
@@ -211,7 +212,7 @@ function toggleUsoSoloLayer() {
 var toggleButton = L.control({ position: 'bottomright' });
 toggleButton.onAdd = function (map) {
   var button = L.DomUtil.create('button', 'toggle-button');
-  button.innerHTML = 'Switch to land use mode';
+  button.innerHTML = 'Mudar para Uso do Solo';
 
   button.onclick = function () {
     toggleUsoSoloLayer();
@@ -227,7 +228,7 @@ var legend = L.control({ position: 'bottomright' });
 legend.onAdd = function (map) {
   var div = L.DomUtil.create('div', 'info legend');
   var labels = ['<strong>Legend</strong>'];
-  var categories = ['Municipal limits', 'Active property', 'Cancelled property'];
+  var categories = ['Limites Municipais', 'Propriedade CAR Ativo', 'Propriedade CAR Cancelado'];
   var colors = ['#C5C5C5', 'yellow', 'red'];
 
   for (var i = 0; i < categories.length; i++) {
