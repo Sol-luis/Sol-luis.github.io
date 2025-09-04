@@ -329,8 +329,9 @@ class caixa_de_ferramentas_vetores:
             print('crs are the same')
         
         clipped = gpd.clip(pol1, pol2)
-        if clipped.length == 0:
-            return print('clipped is empty')
+        if clipped.empty:
+            print('clipped is empty')
+            return clipped
         else:
             print('clipped is not empty')
             return clipped

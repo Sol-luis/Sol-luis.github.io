@@ -9,26 +9,33 @@ import os
 # 2) Recortar por propriedade e deletar arquivos originais
 vault_files = "/home/luisthethormes/01_sol/geo-dev/Sol-luis.github.io/data/"
 limite_produtor = abrindo_dados.process_files(vault_files, "pol_props*", "geojson", zipped = False)
-limite_produtor
 mapbiomas_deforestation_alert = abrindo_dados.process_files(vault_files,
                                                              "*dashboard_*",
                                                              "shp",
                                                                zipped = True)
 prodes_deforestation =  abrindo_dados.process_files(vault_files,
-                                                     "yearly_*",
+                                                     "yearly_deforestation_*",
                                                      "shp",
                                                        zipped = True)
-#clip por propriedade
+prodes_deforestation1 = prodes_deforestation[prodes_deforestation['year'] >= 2021] #filtrando por ano
+# prodes_deforestation2 =  abrindo_dados.process_files(vault_files,
+#                                                      "yearly_deforestation_2024_*",
+#                                                      "shp",
+#                                                        zipped = True)
+# prodes_deforestation = pd.concat([prodes_deforestation1, prodes_deforestation2], ignore_index=True)
+
+
+# clip por propriedade
 clip_mapbiomas_deforestation = caixa_de_ferramentas_vetores.clip_vector_by_vector(mapbiomas_deforestation_alert, limite_produtor)
 clip_mapbiomas_deforestation.to_file(os.path.join(vault_files, 'mapbiomas_deforestation_alert_clip.geojson'),
                                       driver = 'GeoJSON')
 print(clip_mapbiomas_deforestation.shape)
 print(clip_mapbiomas_deforestation.head(10))
-#clip por propriedade
-clip_prodes_deforestation = caixa_de_ferramentas_vetores.clip_vector_by_vector(prodes_deforestation, limite_produtor)
-print(clip_prodes_deforestation.shape)
-print(clip_prodes_deforestation.head(10))
-clip_prodes_deforestation.to_file(os.path.join(vault_files, 'prodes_deforestation_clip.geojson'), driver = 'GeoJSON')
+# clip por propriedade
+# clip_prodes_deforestation = caixa_de_ferramentas_vetores.clip_vector_by_vector(prodes_deforestation, limite_produtor)
+# print(clip_prodes_deforestation.shape)
+# print(clip_prodes_deforestation.head(10))
+# clip_prodes_deforestation.to_file(os.path.join(vault_files, 'prodes_deforestation_clip.geojson'), driver = 'GeoJSON')
 
 # 3) Pivotar desmates por propriedade e ano
 
