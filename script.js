@@ -196,14 +196,14 @@ function toggleUsoSoloLayer() {
     map.removeLayer(usoSoloLayer);
     map.removeControl(usoSoloLegend); // Remover legenda de uso do solo
     legend.addTo(map); // Reativar a legenda original
-    button.innerHTML = 'Mudar para Uso do Solo';
+    button.innerHTML = 'Uso do Solo';
     
   } else {
     // Adicionar camada de uso do solo e substituir a legenda
     usoSoloLayer.addTo(map);
     map.removeControl(legend); // Remover a legenda original
     usoSoloLegend.addTo(map); // Adicionar legenda de uso do solo
-    button.innerHTML = 'Mudar para limite das Propriedades Rurais';
+    button.innerHTML = 'Limite das Propriedades Rurais';
     
   }
 }
